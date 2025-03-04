@@ -134,12 +134,23 @@ function loadLayerData(layerType) {
     const repoName = window.location.pathname.split('/')[1];
     const dataPath = repoName ? `/${repoName}/viz1/data/${config.file}` : `data/${config.file}`;
 
+    console.log('Attempting to load:', dataPath);
+
     fetch(dataPath)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-            return response.json();
+            // Log the content type to verify it's being served correctly
+            console.log('Content-Type:', response.headers.get('content-type'));
+            return response.text().then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', text.substring(0, 200) + '...');
+                    throw new Error('Invalid JSON format in response');
+                }
+            });
         })
         .then(data => {
             console.log(`${layerType} data loaded successfully:`, data);
