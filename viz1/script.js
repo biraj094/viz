@@ -130,9 +130,19 @@ function loadLayerData(layerType) {
         <p>Please wait...</p>
     `);
 
-    // Get the repository name from the current URL
-    const repoName = window.location.pathname.split('/')[1];
-    const dataPath = repoName ? `/${repoName}/viz1/data/${config.file}` : `data/${config.file}`;
+    // Determine if we're running locally or on GitHub Pages
+    const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    
+    let dataPath;
+    if (isLocal) {
+        // Local development path
+        dataPath = `data/${config.file}`;
+    } else {
+        // GitHub Pages path
+        const repoOwner = 'biraj094'; 
+        const repoName = 'viz'; 
+        dataPath = `https://media.githubusercontent.com/${repoOwner}/${repoName}/main/viz1/data/${config.file}`;
+    }
 
     console.log('Attempting to load:', dataPath);
 
