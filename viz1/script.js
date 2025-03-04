@@ -138,10 +138,10 @@ function loadLayerData(layerType) {
         // Local development path
         dataPath = `data/${config.file}`;
     } else {
-        // Use jsDelivr CDN for production
+        // Use GitHub raw content directly
         const repoOwner = 'biraj094'; 
         const repoName = 'viz'; 
-        dataPath = `https://cdn.jsdelivr.net/gh/${repoOwner}/${repoName}/viz1/data/${config.file}`;
+        dataPath = `https://raw.githubusercontent.com/${repoOwner}/${repoName}/main/viz1/data/${config.file}`;
     }
 
     console.log('Attempting to load:', dataPath);
