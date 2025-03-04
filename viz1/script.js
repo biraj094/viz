@@ -130,7 +130,11 @@ function loadLayerData(layerType) {
         <p>Please wait...</p>
     `);
 
-    fetch(`data/${config.file}`)
+    // Get the repository name from the current URL
+    const repoName = window.location.pathname.split('/')[1];
+    const dataPath = repoName ? `/${repoName}/viz1/data/${config.file}` : `data/${config.file}`;
+
+    fetch(dataPath)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
