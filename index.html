@@ -328,7 +328,7 @@
         </div>
         
         <ul class="viz-list">
-            <li class="viz-item" onclick="showVizDetails('viz1')">
+            <li class="viz-item active" onclick="showVizDetails('viz1')">
                 <div class="viz-number">1</div>
                 <div class="viz-item-content">
                     <h3 class="viz-item-title">NepalScope</h3>
@@ -416,12 +416,16 @@
             }
         };
 
+        document.addEventListener('DOMContentLoaded', function() {
+            showVizDetails('viz1');
+        });
+
         function showVizDetails(vizId) {
             // Update active state in list
             document.querySelectorAll('.viz-item').forEach(item => {
                 item.classList.remove('active');
             });
-            event.currentTarget.classList.add('active');
+            document.querySelector(`.viz-item[onclick*="${vizId}"]`).classList.add('active');
 
             // Get viz data
             const viz = vizData[vizId];
