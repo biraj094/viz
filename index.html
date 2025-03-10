@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualization Collection</title>
+    <link rel="icon" type="image/png" href="favico.png">
     <style>
         :root {
             --primary-color: #2c3e50;
@@ -82,6 +83,8 @@
             border-bottom: 1px solid var(--border-color);
             cursor: pointer;
             transition: background-color 0.2s ease;
+            display: flex;
+            align-items: flex-start;
         }
 
         .viz-item:hover {
@@ -91,6 +94,18 @@
         .viz-item.active {
             background-color: #e8f4ff;
             border-left: 4px solid var(--secondary-color);
+        }
+
+        .viz-number {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            margin-right: 1rem;
+            min-width: 25px;
+        }
+
+        .viz-item-content {
+            flex: 1;
         }
 
         .viz-item-title {
@@ -111,6 +126,7 @@
             border-radius: 12px;
             font-size: 0.75rem;
             font-weight: 500;
+            margin: 0.1rem;
         }
 
         .viz-badge.location {
@@ -126,6 +142,16 @@
         .viz-badge.feature {
             background: #fff5f5;
             color: #c53030;
+        }
+
+        .viz-badge.package {
+            background: #faf5ff;
+            color: #6b46c1;
+        }
+
+        .viz-badge.docs {
+            background: #fffaf0;
+            color: #dd6b20;
         }
 
         .viz-details {
@@ -198,11 +224,97 @@
             .container {
                 grid-template-columns: 1fr;
                 padding: 1rem;
+                gap: 1rem;
             }
 
             .viz-details {
-                margin-top: 2rem;
+                margin-top: 1rem;
                 position: static;
+                padding: 1.5rem;
+            }
+
+            body {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .viz-list {
+                max-height: none;
+                margin-bottom: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 0.5rem;
+            }
+
+            .container {
+                padding: 0.5rem;
+                gap: 0.75rem;
+            }
+
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .viz-item {
+                padding: 0.5rem;
+            }
+
+            .viz-details {
+                padding: 1rem;
+            }
+
+            .viz-content h2 {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .tags-container {
+                gap: 0.25rem;
+            }
+
+            .viz-badge {
+                font-size: 0.7rem;
+                padding: 0.1rem 0.4rem;
+            }
+
+            .viz-link {
+                width: 100%;
+                text-align: center;
+                padding: 0.6rem 1rem;
+            }
+        }
+
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                grid-template-columns: 300px 1fr;
+                gap: 1.5rem;
+            }
+
+            .viz-details {
+                padding: 1.5rem;
+            }
+        }
+
+        @media (min-width: 1025px) {
+            .container {
+                max-width: 1400px;
+            }
+        }
+
+        @media (hover: none) {
+            .viz-item:hover {
+                background-color: inherit;
             }
         }
     </style>
@@ -212,24 +324,43 @@
         <div class="header">
             <h1>Visualization Collection</h1>
             <div class="subtitle">List of visualizations visualized by <a href="https://birajkoirala.com.np" target="_blank">Biraj Koirala</a></div>
-            <div class="viz-count">Total Visualizations: (2)</div>
+            <div class="viz-count">Total Visualizations: (3)</div>
         </div>
         
         <ul class="viz-list">
             <li class="viz-item" onclick="showVizDetails('viz1')">
-                <h3 class="viz-item-title">NepalScope</h3>
-                <div class="tags-container">
-                    <span class="viz-badge location">Nepal</span>
-                    <span class="viz-badge tech">D3.js</span>
-                    <span class="viz-badge feature">Compare Districts</span>
+                <div class="viz-number">1</div>
+                <div class="viz-item-content">
+                    <h3 class="viz-item-title">NepalScope</h3>
+                    <div class="tags-container">
+                        <span class="viz-badge location">Nepal</span>
+                        <span class="viz-badge tech">D3.js</span>
+                        <span class="viz-badge feature">Compare Districts</span>
+                    </div>
                 </div>
             </li>
             <li class="viz-item" onclick="showVizDetails('viz2')">
-                <h3 class="viz-item-title">GeoScope</h3>
-                <div class="tags-container">
-                    <span class="viz-badge location">Global</span>
-                    <span class="viz-badge tech">D3.js</span>
-                    <span class="viz-badge feature">Compare Countries</span>
+                <div class="viz-number">2</div>
+                <div class="viz-item-content">
+                    <h3 class="viz-item-title">GeoScope</h3>
+                    <div class="tags-container">
+                        <span class="viz-badge location">Global</span>
+                        <span class="viz-badge tech">D3.js</span>
+                        <span class="viz-badge feature">Compare Countries</span>
+                    </div>
+                </div>
+            </li>
+            <li class="viz-item" onclick="showVizDetails('viz3')">
+                <div class="viz-number">3</div>
+                <div class="viz-item-content">
+                    <h3 class="viz-item-title">Bigha Busters</h3>
+                    <div class="tags-container">
+                        <span class="viz-badge location">Nepal</span>
+                        <span class="viz-badge tech">Streamlit</span>
+                        <span class="viz-badge tech">Python</span>
+                        <span class="viz-badge feature">Land Conversion</span>
+                        <span class="viz-badge package">rupantaran</span>
+                    </div>
                 </div>
             </li>
         </ul>
@@ -248,24 +379,36 @@
             viz1: {
                 title: "NepalScope",
                 tags: {
-                    location: "Nepal",
-                    tech: "D3.js",
-                    feature: "Compare Districts"
+                    location: ["Nepal"],
+                    tech: ["D3.js"],
+                    feature: ["Compare Districts"]
                 },
-                image: "./viz1/preview.png",
+                image: "./viz1/preview.jpg",
                 summary: "NepalScope is a comprehensive visualization tool for exploring Nepal's administrative divisions. It provides an intuitive interface for comparing different administrative levels, from development regions down to individual wards. Essential for researchers, policy makers, and anyone interested in Nepal's administrative geography.",
                 link: "./viz1/index.html"
             },
             viz2: {
                 title: "GeoScope",
                 tags: {
-                    location: "Global",
-                    tech: "D3.js",
-                    feature: "Compare Countries"
+                    location: ["Global"],
+                    tech: ["D3.js"],
+                    feature: ["Compare Countries"]
                 },
-                image: "./viz2/preview.png",
+                image: "./viz2/preview.jpg",
                 summary: "GeoScope is an interactive geographical visualization tool that brings country size comparisons to life. It allows users to select any country and instantly see how it measures up against others, making abstract area measurements tangible through direct visual comparisons. Perfect for educators, students, or anyone curious about global geography.",
                 link: "./viz2/index.html"
+            },
+            viz3: {
+                title: "Bigha Busters",
+                tags: {
+                    location: ["Nepal"],
+                    tech: ["Streamlit", "Python"],
+                    feature: ["Land Conversion"],
+                    package: ["rupantaran"]
+                },
+                image: "./static/screenshots/bigha-busters.jpg",
+                summary: "Bigha Busters is a quirky tool that converts Nepali land units into relatable real-world references. Ever wondered how many basketball courts could fit in your plot? Or if your backyard is larger than the Great Pyramid's base? This fun tool gives you intuitive comparisons, making land measurements more engaging and understandable. Built using <a href='https://github.com/biraj094/rupantaran' target='_blank'>rupantaran</a>, an open-source Python package for Nepali measurement conversions (<a href='https://rupantaran.readthedocs.io/en/latest/' target='_blank'>documentation</a>).",
+                link: "https://bigha-busters.streamlit.app/"
             }
         };
 
@@ -288,13 +431,13 @@
                     <h2>
                         ${viz.title}
                         <div class="tags-container">
-                            <span class="viz-badge location">${viz.tags.location}</span>
-                            <span class="viz-badge tech">${viz.tags.tech}</span>
-                            <span class="viz-badge feature">${viz.tags.feature}</span>
+                            ${Object.entries(viz.tags).map(([type, values]) => 
+                                values.map(value => `<span class="viz-badge ${type}">${value}</span>`).join('')
+                            ).join('')}
                         </div>
                     </h2>
                     <p>${viz.summary}</p>
-                    <a href="${viz.link}" class="viz-link">Open Visualization</a>
+                    <a href="${viz.link}" class="viz-link" target="_blank">Open Visualization</a>
                 </div>
             `;
 
