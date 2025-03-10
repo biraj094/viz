@@ -10,68 +10,106 @@
     <link rel="shortcut icon" href="assets/nepal-512x512.png" type="image/png">
     <meta name="theme-color" content="#dc143c">
     <link rel="stylesheet" href="style.css">
+    <script>
+        // Function to check if the device is mobile
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                   (window.innerWidth <= 768 && 'ontouchstart' in window && !/Windows NT|Macintosh|Linux/i.test(navigator.userAgent));
+        }
+
+        // Function to create and show mobile notice
+        function handleMobileNotice() {
+            if (!isMobileDevice()) return;
+
+            const notice = document.createElement('div');
+            notice.id = 'mobileNotice';
+            notice.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                background: #2c3e50;
+                color: white;
+                padding: 10px 15px;
+                text-align: center;
+                font-size: 14px;
+                z-index: 1000;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+            `;
+            
+            notice.innerHTML = `
+                <span>📱 For the best experience, please use a desktop browser</span>
+                <button onclick="this.parentElement.remove()" style="
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    padding: 0 5px;
+                    font-size: 16px;
+                ">×</button>
+            `;
+            
+            document.body.prepend(notice);
+        }
+
+        // Initialize when DOM is loaded
+        document.addEventListener('DOMContentLoaded', handleMobileNotice);
+    </script>
 </head>
 <body>
-    <!-- Mobile Notice Modal -->
-    <div id="mobileNoticeModal" class="modal" role="dialog" aria-labelledby="mobileNoticeTitle">
-        <div class="modal-content">
-            <button class="close-button" aria-label="Close">&times;</button>
-            <h2 id="mobileNoticeTitle">📱 Mobile Device Detected</h2>
-            <div class="mobile-notice">
-                <p>For the best experience with this interactive visualization, we recommend using a desktop or laptop computer.</p>
-                <p>While you can still use the visualization on mobile, the larger screen and precise controls of a desktop device will provide a more optimal experience.</p>
+    <div class="container">
+        <header>
+            <div class="title-container">
+                <h1 class="main-title">NepalScope</h1>
+                <p class="subtitle">Interactive Region Explorer</p>
             </div>
-        </div>
-    </div>
-
-    <header>
-        <div class="title-container">
-            <h1 class="main-title">NepalScope</h1>
-            <p class="subtitle">Interactive Region Explorer</p>
-        </div>
-        <div class="controls">
-            <div class="layer-buttons">
-                <button class="layer-button" data-layer="development-regions">Development Regions</button>
-                <button class="layer-button" data-layer="states">States</button>
-                <button class="layer-button active" data-layer="districts">Districts</button>
-                <button class="layer-button" data-layer="municipalities">Municipalities</button>
-                <button class="layer-button" data-layer="wards">Wards</button>
-            </div>
-            <button id="resetMap" class="reset-button">Reset</button>
-            <button id="infoButton" class="info-button" aria-label="Information">ℹ️</button>
-        </div>
-    </header>
-
-    <main>
-        <svg aria-label="Interactive map of Nepal regions"></svg>
-        <div id="legend" role="complementary" aria-label="Region information">
-            <h3>No region selected</h3>
-            <p>Click on a region to begin</p>
-        </div>
-    </main>
-
-    <footer>
-        <p>Visualized by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></p>
-    </footer>
-
-    <!-- Modal -->
-    <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle">
-        <div class="modal-content">
-            <button class="close-button" aria-label="Close">&times;</button>
-            <h2 id="modalTitle">How to Use</h2>
-            <div class="instruction-steps">
-                <div class="step mb-2">
-                    <h3>Basic Controls</h3>
-                    <ul>
-                        <li>Click a region to select it</li>
-                        <li>Hover over other regions to compare</li>
-                        <li>Click while hovering to freeze comparison</li>
-                        <li>Use Reset to start over</li>
-                    </ul>
+            <div class="controls">
+                <div class="layer-buttons">
+                    <button class="layer-button" data-layer="development-regions">Development Regions</button>
+                    <button class="layer-button" data-layer="states">States</button>
+                    <button class="layer-button active" data-layer="districts">Districts</button>
+                    <button class="layer-button" data-layer="municipalities">Municipalities</button>
+                    <button class="layer-button" data-layer="wards">Wards</button>
                 </div>
-                <div class="step">
-                    <h3>Layer Selection</h3>
-                    <p>Use the buttons above to switch between different administrative divisions of Nepal</p>
+                <button id="resetMap" class="reset-button">Reset</button>
+                <button id="infoButton" class="info-button" aria-label="Information">ℹ️</button>
+            </div>
+        </header>
+
+        <main>
+            <svg aria-label="Interactive map of Nepal regions"></svg>
+            <div id="legend" role="complementary" aria-label="Region information">
+                <h3>No region selected</h3>
+                <p>Click on a region to begin</p>
+            </div>
+        </main>
+
+        <footer>
+            <p>Visualized by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></p>
+        </footer>
+
+        <!-- Modal -->
+        <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle">
+            <div class="modal-content">
+                <button class="close-button" aria-label="Close modal" type="button">&times;</button>
+                <h2 id="modalTitle">How to Use</h2>
+                <div class="instruction-steps">
+                    <div class="step mb-2">
+                        <h3>Basic Controls</h3>
+                        <ul>
+                            <li>Click a region to select it</li>
+                            <li>Hover over other regions to compare</li>
+                            <li>Click while hovering to freeze comparison</li>
+                            <li>Use Reset to start over</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>Layer Selection</h3>
+                        <p>Use the buttons above to switch between different administrative divisions of Nepal</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -79,6 +117,5 @@
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
-    <script src="../mobile-detect.js"></script>
 </body>
 </html> 

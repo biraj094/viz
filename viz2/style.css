@@ -18,14 +18,15 @@
 body {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    height: 100vh;
     font-family: 'Inter', Arial, sans-serif;
     background-color: #f8f9fa;
+    overflow: hidden;
 }
 
 header {
-    background: #2c3e50;
-    padding: 1rem;
+    background: #f8f9fa;
+    padding: 0.8rem;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -33,7 +34,8 @@ header {
     justify-content: center;
     align-items: center;
     gap: 15px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    height: 60px;
 }
 
 .rainbow-text {
@@ -48,24 +50,13 @@ header {
     align-items: center;
     gap: 12px;
     font-size: 1.5rem;
-    font-weight: 700;
-    background: linear-gradient(45deg, #7eb0d5, #95b2d4, #b8c7d9, #d5d5d5, #dbc5cf, #d4a5b9, #c986a2, #7eb0d5);
-    background-size: 800% 800%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: rainbow 8s ease infinite;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
 .rainbow-text .subtitle {
     font-size: 1rem;
-    opacity: 0.9;
-    background: linear-gradient(45deg, #7eb0d5, #95b2d4, #b8c7d9, #d5d5d5, #dbc5cf, #d4a5b9, #c986a2, #7eb0d5);
-    background-size: 800% 800%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    animation: rainbow 8s ease infinite;
+    color: #666;
 }
 
 .rotating-globe {
@@ -77,9 +68,11 @@ header {
 main {
     display: flex;
     flex: 1;
-    padding: 20px;
-    gap: 20px;
+    padding: 10px;
+    gap: 15px;
     background-color: #f8f9fa;
+    min-height: 0;
+    overflow: hidden;
 }
 
 svg {
@@ -87,7 +80,7 @@ svg {
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     width: 70vw;
-    height: 80vh;
+    height: calc(100vh - 100px);
 }
 
 .country {
@@ -124,11 +117,11 @@ svg {
     flex: 1;
     min-width: 300px;
     max-width: 400px;
-    padding: 20px;
+    padding: 15px;
     background: #ffffff;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    height: 80vh;
+    height: calc(100vh - 100px);
     overflow-y: auto;
     user-select: text;
 }
@@ -248,10 +241,10 @@ svg {
     position: absolute;
     right: 20px;
     padding: 8px 16px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    background-color: #fff;
+    color: #2c3e50;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
     font-size: 0.9rem;
@@ -259,16 +252,21 @@ svg {
 }
 
 .reset-button:hover {
-    background-color: #c82333;
+    background-color: #f8f9fa;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 footer {
     background: #2c3e50;
     color: #fff;
     text-align: center;
-    padding: 1rem;
+    padding: 0.5rem;
     font-size: 0.9rem;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 footer .footer-text {
@@ -296,25 +294,30 @@ footer a:hover {
 .learn-button {
     position: absolute;
     left: 20px;
-    padding: 4px 8px;
-    background: none;
-    color: white;
-    border: 2px solid white;
-    border-radius: 50%;
+    padding: 8px 16px;
+    background: #fff;
+    color: #2c3e50;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
     cursor: pointer;
     transition: all 0.2s;
-    font-size: 1.2rem;
-    line-height: 1;
+    font-size: 0.9rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
+    gap: 6px;
+    height: auto;
+    width: auto;
 }
 
 .learn-button:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: #f8f9fa;
     transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.learn-button::before {
+    content: "How to use";
 }
 
 /* Modal Styles */
@@ -325,68 +328,99 @@ footer a:hover {
     left: 0;
     top: 0;
     width: 100%;
-    height: 100%;
+    height: 100vh;
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(5px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+.modal.show {
+    display: block;
+    opacity: 1;
 }
 
 .modal-content {
     position: relative;
     background-color: #fff;
-    margin: 5% auto;
-    padding: 30px;
-    width: 80%;
-    max-width: 700px;
+    margin: 40px auto;
+    padding: 2rem;
+    width: 90%;
+    max-width: 600px;
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    max-height: 85vh;
-    overflow-y: auto;
+    transform: translateY(-20px);
+    opacity: 0;
+    transition: all 0.3s ease;
+}
+
+.modal.show .modal-content {
+    transform: translateY(0);
+    opacity: 1;
 }
 
 .close-button {
     position: absolute;
-    right: 20px;
-    top: 15px;
-    font-size: 28px;
-    font-weight: bold;
+    right: 1rem;
+    top: 1rem;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: #f8f9fa;
     color: #666;
+    font-size: 20px;
     cursor: pointer;
-    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0;
+    line-height: 1;
 }
 
 .close-button:hover {
+    background-color: #e9ecef;
     color: #000;
+    transform: scale(1.1);
 }
 
 .modal h2 {
     color: #2c3e50;
-    margin-bottom: 25px;
-    font-size: 1.8rem;
-    border-bottom: 2px solid #f0f0f0;
-    padding-bottom: 15px;
+    margin: 0 0 1.5rem;
+    font-size: 1.5rem;
+    padding-right: 2rem;
 }
 
 .feature-section {
-    margin-bottom: 25px;
-    padding: 15px;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
     background: #f8f9fa;
     border-radius: 8px;
     border-left: 4px solid #28a745;
 }
 
+.feature-section:last-child {
+    margin-bottom: 0;
+}
+
 .feature-section h3 {
     color: #2c3e50;
-    margin-bottom: 15px;
-    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
 }
 
 .feature-section ul, .feature-section ol {
-    padding-left: 20px;
-    margin: 10px 0;
+    padding-left: 1.5rem;
+    margin: 1rem 0;
 }
 
 .feature-section li {
-    margin: 10px 0;
+    margin: 0.75rem 0;
     line-height: 1.6;
     color: #495057;
 }
@@ -398,16 +432,18 @@ footer a:hover {
 /* Responsive Design */
 @media (max-width: 1200px) {
     main {
-        padding: 15px;
-        gap: 15px;
+        padding: 10px;
+        gap: 10px;
     }
     
     svg {
         width: 65vw;
+        height: calc(100vh - 100px);
     }
     
     #legend {
         min-width: 250px;
+        height: calc(100vh - 100px);
     }
 }
 
@@ -422,28 +458,39 @@ footer a:hover {
     
     svg {
         width: 60vw;
+        height: calc(100vh - 100px);
     }
 }
 
 @media (max-width: 768px) {
+    header {
+        height: 50px;
+        padding: 0.6rem;
+    }
+
     main {
         flex-direction: column;
         padding: 10px;
+        gap: 10px;
     }
     
     svg {
         width: 100%;
-        height: 50vh;
+        height: calc(60vh - 60px);
     }
     
     #legend {
         width: 100%;
         max-width: none;
-        height: auto;
-        max-height: 40vh;
-        margin-top: 10px;
+        height: calc(40vh - 40px);
+        margin-top: 0;
     }
     
+    footer {
+        height: 30px;
+        padding: 0.3rem;
+    }
+
     .reset-button {
         right: 10px;
         padding: 6px 12px;
@@ -451,12 +498,38 @@ footer a:hover {
 
     .learn-button {
         left: 10px;
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .learn-button::before {
+        content: "Help";
+    }
+
+    .modal {
+        padding: 15px;
+    }
+
+    .modal-content {
+        margin: 20px auto;
+        padding: 1.5rem;
+        width: 95%;
+    }
+
+    .modal h2 {
+        font-size: 1.3rem;
+    }
+
+    .feature-section {
+        padding: 1rem;
+        margin-bottom: 1.5rem;
     }
 }
 
 @media (max-width: 576px) {
     header {
-        padding: 0.8rem;
+        height: 45px;
+        padding: 0.5rem;
     }
     
     .rainbow-text .title {
@@ -479,6 +552,47 @@ footer a:hover {
         width: 28px;
         height: 28px;
         font-size: 1rem;
+    }
+
+    .modal {
+        padding: 10px;
+    }
+
+    .modal-content {
+        margin: 10px auto;
+        padding: 1.25rem;
+    }
+
+    .feature-section {
+        padding: 0.875rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .feature-section h3 {
+        font-size: 1.1rem;
+    }
+
+    .feature-section li {
+        font-size: 0.95rem;
+    }
+
+    .close-button {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+    }
+
+    svg {
+        height: calc(60vh - 55px);
+    }
+    
+    #legend {
+        height: calc(40vh - 35px);
+    }
+    
+    footer {
+        height: 25px;
+        padding: 0.2rem;
     }
 }
 

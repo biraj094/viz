@@ -38,8 +38,16 @@ body {
     font-family: system-ui, -apple-system, sans-serif;
     background: var(--background-color);
     color: var(--text-color);
-    overflow: hidden;
     height: 100vh;
+    width: 100vw;
+    position: relative;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
 }
 
 /* Layout Components */
@@ -49,13 +57,8 @@ header {
     text-align: center;
     border-bottom: 1px solid var(--border-color);
     box-shadow: 0 2px 4px rgba(0,0,0,0.03);
-    height: var(--header-height);
-    min-height: fit-content;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    width: 100%;
+    z-index: 10;
 }
 
 .title-container {
@@ -161,20 +164,21 @@ header {
 }
 
 main {
-    display: flex;
     flex: 1;
+    display: flex;
     padding: 10px;
-    overflow: hidden;
-    height: calc(100vh - var(--header-height) - var(--footer-height));
+    gap: 10px;
+    min-height: 0; /* Important for Firefox */
 }
 
 svg {
+    flex: 7;
     background: #f8f9fa;
     border: 1px solid var(--border-color);
-    width: 70%;
-    height: 100%;
-    max-height: 100%;
     border-radius: 4px;
+    min-height: 0; /* Important for Firefox */
+    width: 100%;
+    height: 100%;
 }
 
 .district {
@@ -237,15 +241,14 @@ svg {
 }
 
 #legend {
-    margin-left: 10px;
-    width: 30%;
+    flex: 3;
     padding: 15px;
     background: #ffffff;
     border: 1px solid var(--border-color);
     border-radius: 4px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    height: 100%;
     overflow-y: auto;
+    min-width: 250px;
 }
 
 #legend h3 {
@@ -295,9 +298,10 @@ footer {
     text-align: center;
     padding: 0.8rem;
     font-size: 0.9rem;
-    height: var(--footer-height);
     border-top: 1px solid var(--border-color);
     box-shadow: 0 -2px 4px rgba(0,0,0,0.03);
+    width: 100%;
+    z-index: 10;
 }
 
 footer .footer-text {
@@ -384,36 +388,20 @@ footer a:hover {
 }
 
 @media (max-width: 768px) {
-    header {
-        padding: 0.5rem;
-        justify-content: center;
-    }
-    .title-container {
-        flex-direction: column;
-        gap: 0.3rem;
-    }
     main {
         flex-direction: column;
         padding: 5px;
-        height: calc(100vh - var(--header-height) - var(--footer-height));
     }
+    
     svg {
+        flex: 6;
         width: 100%;
-        height: 60%;
     }
+    
     #legend {
+        flex: 4;
         width: 100%;
-        margin: 5px 0 0;
-        height: 40%;
-        max-height: 40%;
-    }
-    .controls {
-        width: 100%;
-        justify-content: center;
-    }
-    .layer-button {
-        padding: 4px 8px;
-        font-size: 0.8rem;
+        min-width: unset;
     }
 }
 
@@ -445,7 +433,7 @@ footer a:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(3px);
 }
 
@@ -453,23 +441,37 @@ footer a:hover {
     background-color: #ffffff;
     margin: 5% auto;
     padding: 25px;
-    border-radius: 8px;
+    border-radius: 12px;
     width: 80%;
     max-width: 600px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    position: relative;
 }
 
 .close-button {
-    float: right;
-    font-size: 1.5rem;
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    width: 32px;
+    height: 32px;
+    background: #f8f9fa;
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 50%;
     cursor: pointer;
-    color: var(--text-color);
-    opacity: 0.7;
-    transition: opacity var(--transition-speed);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: #666;
+    transition: all 0.2s ease;
+    padding: 0;
+    line-height: 1;
 }
 
 .close-button:hover {
-    opacity: 1;
+    background-color: #e9ecef;
+    color: #000;
+    transform: scale(1.1);
 }
 
 .instruction-steps {
@@ -501,6 +503,23 @@ footer a:hover {
     color: #666;
     line-height: 1.5;
     margin: 5px 0;
+}
+
+/* Mobile responsiveness for modal */
+@media (max-width: 768px) {
+    .modal-content {
+        margin: 10% auto;
+        width: 90%;
+        padding: 20px;
+    }
+    
+    .close-button {
+        width: 28px;
+        height: 28px;
+        font-size: 18px;
+        right: 10px;
+        top: 10px;
+    }
 }
 
 /* Utility Classes */

@@ -1,44 +1,45 @@
 // Function to check if the device is mobile
 function isMobileDevice() {
-    // Check if device is mobile based on user agent
-    const isMobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // Check if it's a narrow screen (typical for mobile)
-    const isNarrowScreen = window.innerWidth <= 768;
-    
-    // Check if it's a touch device but not a laptop with touch screen
-    const isTouchOnly = ('ontouchstart' in window) && 
-                       // Exclude Windows Touch Devices (laptops/desktops with touch)
-                       !(/Windows NT/i.test(navigator.userAgent)) &&
-                       // Exclude macOS Touch Devices (laptops with touch bar)
-                       !(/Macintosh/i.test(navigator.userAgent));
-
-    // Device is considered mobile if it has a mobile user agent OR
-    // if it's both a narrow screen AND touch-only device
-    return isMobileUserAgent || (isNarrowScreen && isTouchOnly);
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           (window.innerWidth <= 768 && 'ontouchstart' in window && !/Windows NT|Macintosh|Linux/i.test(navigator.userAgent));
 }
 
-// Function to handle the mobile notice modal
+// Function to create and show mobile notice
 function handleMobileNotice() {
-    const modal = document.getElementById('mobileNoticeModal');
-    const closeButton = modal.querySelector('.close-button');
+    if (!isMobileDevice()) return;
 
-    // Show modal if it's a mobile device
-    if (isMobileDevice()) {
-        modal.style.display = 'block';
-    }
-
-    // Close modal when clicking the close button
-    closeButton.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    // Close modal when clicking outside
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
-        }
-    });
+    const notice = document.createElement('div');
+    notice.id = 'mobileNotice';
+    notice.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: #2c3e50;
+        color: white;
+        padding: 10px 15px;
+        text-align: center;
+        font-size: 14px;
+        z-index: 1000;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+    `;
+    
+    notice.innerHTML = `
+        <span>📱 For the best experience, please use a desktop browser</span>
+        <button onclick="this.parentElement.remove()" style="
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 0 5px;
+            font-size: 16px;
+        ">×</button>
+    `;
+    
+    document.body.prepend(notice);
 }
 
 // Initialize when DOM is loaded

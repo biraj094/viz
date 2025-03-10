@@ -327,33 +327,38 @@ d3.select("#resetMap").on("click", function() {
         .style("fill", "#e0e0e0");
 });
 
-// Modal functionality
-const modal = document.getElementById("instructionModal");
-const learnButton = document.getElementById("learnButton");
-const closeButton = document.querySelector(".close-button");
+// Modal handling
+const modal = document.getElementById('instructionModal');
+const learnButton = document.getElementById('learnButton');
+const closeButton = modal.querySelector('.close-button');
 
-learnButton.onclick = function() {
-    modal.style.display = "block";
-    document.body.style.overflow = "hidden"; // Prevent scrolling when modal is open
+function openModal() {
+    modal.style.display = 'block';
+    // Force reflow
+    modal.offsetHeight;
+    modal.classList.add('show');
 }
 
-closeButton.onclick = function() {
-    modal.style.display = "none";
-    document.body.style.overflow = "auto"; // Re-enable scrolling
+function closeModal() {
+    modal.classList.remove('show');
+    setTimeout(() => {
+        modal.style.display = 'none';
+    }, 300); // Match the CSS transition duration
 }
 
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
+learnButton.addEventListener('click', openModal);
+closeButton.addEventListener('click', closeModal);
+
+// Close modal when clicking outside
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeModal();
     }
-}
+});
 
 // Close modal with Escape key
-document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape" && modal.style.display === "block") {
-        modal.style.display = "none";
-        document.body.style.overflow = "auto";
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.style.display === 'block') {
+        closeModal();
     }
 }); 

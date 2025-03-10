@@ -16,6 +16,7 @@ An interactive tool for exploring Nepal's administrative divisions. Compare diff
 - **Technologies**: D3.js
 - **Features**: Compare Districts
 - **Demo**: <a href="https://biraj094.github.io/viz/viz1/" target="_blank">Launch NepalScope</a>
+- **Data Source**: GeoJSON data sourced from <a href="https://github.com/mesaugat/geoJSON-Nepal" target="_blank">geoJSON-Nepal</a>
 
 ### 2. GeoScope
 ![GeoScope Preview](./viz2/preview.jpg)
@@ -36,6 +37,10 @@ A fun and practical tool that converts Nepali land units into relatable real-wor
 - **Package**: <a href="https://github.com/biraj094/rupantaran" target="_blank">rupantaran</a> (<a href="https://rupantaran.readthedocs.io/en/latest/" target="_blank">Documentation</a>)
 - **Demo**: <a href="https://bigha-busters.streamlit.app/" target="_blank">Launch Bigha Busters</a>
 
+## Data Accuracy
+
+If you find any discrepancies in measurements or geographical data, please create an issue on GitHub. 
+
 ## License
 
-© 2024 Biraj Koirala. All rights reserved.
+© 2024 Biraj Koirala

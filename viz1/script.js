@@ -218,6 +218,9 @@ document.getElementById('resetMap').addEventListener('click', function() {
 // Initialize layer controls
 LayerControls.init();
 
+// Load districts layer by default
+loadLayerData('districts');
+
 // Update map event handlers
 mapGroup.selectAll(".district")
     .on("click", MapInteractions.handleClick)
@@ -416,7 +419,7 @@ function loadLayerData(layerType) {
 // Modal functionality
 const modal = document.getElementById('instructionModal');
 const infoButton = document.getElementById('infoButton');
-const closeButton = document.querySelector('.close-button');
+const closeButton = modal.querySelector('.close-button');
 
 infoButton.addEventListener('click', (event) => {
     event.stopPropagation();
