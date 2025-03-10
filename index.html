@@ -3,63 +3,306 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualization Projects</title>
+    <title>Visualization Collection</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 2rem;
-            background-color: #f5f5f5;
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            --border-color: #e1e4e8;
         }
-        h1 {
-            color: #2c3e50;
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 2rem;
+            min-height: 100vh;
+            background: var(--background-gradient);
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            flex: 1;
+        }
+
+        .header {
+            grid-column: 1 / -1;
             text-align: center;
             margin-bottom: 2rem;
         }
-        .project-list {
+
+        h1 {
+            margin-bottom: 0.5rem;
+            font-weight: 300;
+            font-size: 2.5rem;
+            color: var(--primary-color);
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .subtitle a:hover {
+            text-decoration: underline;
+        }
+
+        .viz-count {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .viz-list {
             list-style: none;
             padding: 0;
-        }
-        .project-card {
+            margin: 0;
             background: white;
             border-radius: 8px;
-            padding: 1.5rem;
-            margin-bottom: 1rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            transition: transform 0.2s ease-in-out;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-height: calc(100vh - 150px);
+            overflow-y: auto;
         }
-        .project-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+
+        .viz-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
-        .project-card a {
-            color: #3498db;
-            text-decoration: none;
-            font-size: 1.2rem;
+
+        .viz-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .viz-item.active {
+            background-color: #e8f4ff;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .viz-item-title {
+            font-size: 1rem;
+            margin: 0 0 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .viz-badge {
+            display: inline-block;
+            padding: 0.15rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
             font-weight: 500;
         }
-        .project-card a:hover {
-            color: #2980b9;
+
+        .viz-badge.location {
+            background: #e8f4ff;
+            color: var(--secondary-color);
         }
-        .project-description {
+
+        .viz-badge.tech {
+            background: #f0fff4;
+            color: #2f855a;
+        }
+
+        .viz-badge.feature {
+            background: #fff5f5;
+            color: #c53030;
+        }
+
+        .viz-details {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            position: sticky;
+            top: 2rem;
+        }
+
+        .viz-details.empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
             color: #666;
-            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .viz-preview {
+            margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .viz-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .viz-content h2 {
+            margin: 0 0 1rem;
+            color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .viz-content p {
+            color: #555;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .viz-link {
+            display: inline-block;
+            background: var(--secondary-color);
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
+            transition: background-color 0.2s ease;
+        }
+
+        .viz-link:hover {
+            background-color: #2980b9;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem 0 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .viz-details {
+                margin-top: 2rem;
+                position: static;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Visualization Projects</h1>
-    <ul class="project-list">
-        <li class="project-card">
-            <a href="./viz1/">Visualization 1</a>
-            <p class="project-description">Nepal GeoJSON visualization with development regions, districts, municipalities, and more.</p>
-        </li>
-        <li class="project-card">
-            <a href="./viz2/">Visualization 2</a>
-            <p class="project-description">Interactive visualization project.</p>
-        </li>
-    </ul>
+    <div class="container">
+        <div class="header">
+            <h1>Visualization Collection</h1>
+            <div class="subtitle">List of visualizations visualized by <a href="https://birajkoirala.com.np" target="_blank">Biraj Koirala</a></div>
+            <div class="viz-count">Total Visualizations: (2)</div>
+        </div>
+        
+        <ul class="viz-list">
+            <li class="viz-item" onclick="showVizDetails('viz1')">
+                <h3 class="viz-item-title">NepalScope</h3>
+                <div class="tags-container">
+                    <span class="viz-badge location">Nepal</span>
+                    <span class="viz-badge tech">D3.js</span>
+                    <span class="viz-badge feature">Compare Districts</span>
+                </div>
+            </li>
+            <li class="viz-item" onclick="showVizDetails('viz2')">
+                <h3 class="viz-item-title">GeoScope</h3>
+                <div class="tags-container">
+                    <span class="viz-badge location">Global</span>
+                    <span class="viz-badge tech">D3.js</span>
+                    <span class="viz-badge feature">Compare Countries</span>
+                </div>
+            </li>
+        </ul>
+
+        <div id="viz-details" class="viz-details empty">
+            Select a visualization to see details
+        </div>
+    </div>
+
+    <footer class="footer">
+        © 2024 Biraj Koirala. All rights reserved.
+    </footer>
+
+    <script>
+        const vizData = {
+            viz1: {
+                title: "NepalScope",
+                tags: {
+                    location: "Nepal",
+                    tech: "D3.js",
+                    feature: "Compare Districts"
+                },
+                image: "./viz1/preview.png",
+                summary: "NepalScope is a comprehensive visualization tool for exploring Nepal's administrative divisions. It provides an intuitive interface for comparing different administrative levels, from development regions down to individual wards. Essential for researchers, policy makers, and anyone interested in Nepal's administrative geography.",
+                link: "./viz1/index.html"
+            },
+            viz2: {
+                title: "GeoScope",
+                tags: {
+                    location: "Global",
+                    tech: "D3.js",
+                    feature: "Compare Countries"
+                },
+                image: "./viz2/preview.png",
+                summary: "GeoScope is an interactive geographical visualization tool that brings country size comparisons to life. It allows users to select any country and instantly see how it measures up against others, making abstract area measurements tangible through direct visual comparisons. Perfect for educators, students, or anyone curious about global geography.",
+                link: "./viz2/index.html"
+            }
+        };
+
+        function showVizDetails(vizId) {
+            // Update active state in list
+            document.querySelectorAll('.viz-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+
+            // Get viz data
+            const viz = vizData[vizId];
+            
+            // Generate details HTML
+            const detailsHtml = `
+                <div class="viz-preview">
+                    <img src="${viz.image}" alt="${viz.title} preview" onerror="this.src='https://via.placeholder.com/800x400?text=Preview+Coming+Soon'">
+                </div>
+                <div class="viz-content">
+                    <h2>
+                        ${viz.title}
+                        <div class="tags-container">
+                            <span class="viz-badge location">${viz.tags.location}</span>
+                            <span class="viz-badge tech">${viz.tags.tech}</span>
+                            <span class="viz-badge feature">${viz.tags.feature}</span>
+                        </div>
+                    </h2>
+                    <p>${viz.summary}</p>
+                    <a href="${viz.link}" class="viz-link">Open Visualization</a>
+                </div>
+            `;
+
+            // Update details container
+            const detailsContainer = document.getElementById('viz-details');
+            detailsContainer.classList.remove('empty');
+            detailsContainer.innerHTML = detailsHtml;
+        }
+    </script>
 </body>
 </html>
