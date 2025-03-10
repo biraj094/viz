@@ -73,41 +73,168 @@ const mapGroup = svg.append("g");
 const hoverGroup = svg.append("g");
 const equivalentGroup = svg.append("g");
 
-let selectedDistrict = null;
-let currentLayer = 'districts';
-let layerData = [];
-let currentHoverDistrict = null;
+// Map State Management
+const MapState = {
+    selectedDistrict: null,
+    currentHoverDistrict: null,
+    isHoverPaused: false,
+    frozenSelectedDistrict: null,
+    frozenHoverDistrict: null,
+    currentLayer: 'districts',
+    layerData: [],
+    
+    reset() {
+        this.selectedDistrict = null;
+        this.currentHoverDistrict = null;
+        this.frozenSelectedDistrict = null;
+        this.frozenHoverDistrict = null;
+        this.isHoverPaused = false;
+    },
 
-// Initialize map with districts layer
-loadLayerData('districts');
-
-// Add click handlers for layer buttons
-document.querySelectorAll('.layer-button').forEach(button => {
-    button.addEventListener('click', function() {
-        // Update active state
-        document.querySelectorAll('.layer-button').forEach(btn => btn.classList.remove('active'));
-        this.classList.add('active');
+    freezeComparison(selected, hovered) {
+        this.isHoverPaused = true;
+        this.frozenSelectedDistrict = selected;
+        this.frozenHoverDistrict = hovered;
+        this.selectedDistrict = selected;
+        this.currentHoverDistrict = hovered;
         
-        // Load the new layer
-        const layerType = this.getAttribute('data-layer');
-        currentLayer = layerType;
-        loadLayerData(layerType);
-    });
-});
+        // Update visual state
+        mapGroup.selectAll(".district")
+            .style("pointer-events", "none")
+            .style("cursor", "default");
+            
+        mapGroup.selectAll(".selected-district")
+            .classed("selected-district", true)
+            .style("opacity", "0.8");
+            
+        mapGroup.select(`path[data-id="${hovered.properties.name}"]`)
+            .classed("hover-district", true)
+            .style("opacity", "0.8");
+    }
+};
 
-// Reset button handler
+// Map Interaction Handlers
+const MapInteractions = {
+    handleClick(event, d) {
+        event.stopPropagation();
+        
+        if (MapState.isHoverPaused) return;
+        
+        if (!d || !d.properties || !d.properties.areaKm2) {
+            console.warn('Invalid click data:', d);
+            return;
+        }
+        
+        if (!MapState.selectedDistrict) {
+            MapState.selectedDistrict = d;
+            d3.select(event.target)
+                .classed("selected-district", true)
+                .attr("data-id", d.properties.name);
+            updateLegend(d);
+            return;
+        }
+        
+        if (MapState.selectedDistrict && MapState.currentHoverDistrict === d) {
+            MapState.freezeComparison(MapState.selectedDistrict, d);
+            compareDistricts(MapState.selectedDistrict, MapState.currentHoverDistrict);
+        }
+    },
+
+    handleHover(event, d) {
+        if (MapState.isHoverPaused) return;
+        if (!MapState.selectedDistrict || d === MapState.selectedDistrict) return;
+        
+        if (!d || !d.properties || !d.properties.areaKm2) {
+            console.warn('Invalid hover data:', d);
+            return;
+        }
+        
+        mapGroup.selectAll(".hover-district").classed("hover-district", false);
+        
+        MapState.currentHoverDistrict = d;
+        const target = d3.select(event.target)
+            .classed("hover-district", true)
+            .attr("data-id", d.properties.name);
+        compareDistricts(MapState.selectedDistrict, MapState.currentHoverDistrict);
+    },
+
+    handleHoverEnd() {
+        if (MapState.isHoverPaused) return;
+        if (!MapState.selectedDistrict) return;
+        
+        mapGroup.selectAll(".hover-district").classed("hover-district", false);
+        MapState.currentHoverDistrict = null;
+        updateLegend(MapState.selectedDistrict);
+    }
+};
+
+// Layer Button Handlers
+const LayerControls = {
+    init() {
+        document.querySelectorAll('.layer-button').forEach(button => {
+            button.addEventListener('click', this.handleLayerChange);
+        });
+    },
+
+    handleLayerChange(event) {
+        if (MapState.isHoverPaused) return;
+
+        document.querySelectorAll('.layer-button').forEach(btn => btn.classList.remove('active'));
+        event.target.classList.add('active');
+        
+        const layerType = event.target.getAttribute('data-layer');
+        MapState.currentLayer = layerType;
+        loadLayerData(layerType);
+    }
+};
+
+// Reset Button Handler
 document.getElementById('resetMap').addEventListener('click', function() {
-    selectedDistrict = null;
-    currentHoverDistrict = null;
-    mapGroup.selectAll(".selected-district").classed("selected-district", false);
-    mapGroup.selectAll(".hover-district").classed("hover-district", false);
+    MapState.reset();
+    
+    // Reset visual state
+    mapGroup.selectAll(".district")
+        .style("pointer-events", "auto")
+        .style("cursor", "pointer")
+        .style("opacity", "0.7")
+        .classed("selected-district", false)
+        .classed("hover-district", false);
+    
     hoverGroup.selectAll("*").remove();
-    equivalentGroup.selectAll(".equivalent-area").remove();
+    equivalentGroup.selectAll("*").remove();
+    
+    // Reattach event handlers
+    mapGroup.selectAll(".district")
+        .on("click", MapInteractions.handleClick)
+        .on("mouseover", MapInteractions.handleHover)
+        .on("mouseout", MapInteractions.handleHoverEnd);
     
     d3.select("#legend").html(`
         <h3>No region selected</h3>
         <p>Click on a region to begin</p>
     `);
+});
+
+// Initialize layer controls
+LayerControls.init();
+
+// Update map event handlers
+mapGroup.selectAll(".district")
+    .on("click", MapInteractions.handleClick)
+    .on("mouseover", MapInteractions.handleHover)
+    .on("mouseout", MapInteractions.handleHoverEnd);
+
+// SVG background click handler
+svg.on("click", function(event) {
+    if (event.target === this && !MapState.isHoverPaused) {
+        MapState.reset();
+        mapGroup.selectAll(".selected-district").classed("selected-district", false);
+        mapGroup.selectAll(".hover-district").classed("hover-district", false);
+        d3.select("#legend").html(`
+            <h3>No region selected</h3>
+            <p>Click on a region to begin</p>
+        `);
+    }
 });
 
 function loadLayerData(layerType) {
@@ -120,9 +247,9 @@ function loadLayerData(layerType) {
     // Clear existing data
     mapGroup.selectAll("*").remove();
     hoverGroup.selectAll("*").remove();
-    equivalentGroup.selectAll("*").remove();
-    selectedDistrict = null;
-    currentHoverDistrict = null;
+    hoverGroup.selectAll("*").remove();
+    MapState.selectedDistrict = null;
+    MapState.currentHoverDistrict = null;
 
     // Update legend
     d3.select("#legend").html(`
@@ -167,7 +294,7 @@ function loadLayerData(layerType) {
             
             // Special handling for district headquarters (points)
             if (layerType === 'district-headquarters') {
-                layerData = data.features.map(d => ({
+                MapState.layerData = data.features.map(d => ({
                     ...d,
                     properties: {
                         ...d.properties,
@@ -182,7 +309,7 @@ function loadLayerData(layerType) {
 
                 // Draw points for headquarters
                 mapGroup.selectAll("circle")
-                    .data(layerData)
+                    .data(MapState.layerData)
                     .enter()
                     .append("circle")
                     .attr("class", "district")
@@ -193,19 +320,19 @@ function loadLayerData(layerType) {
                     .style("stroke", "#fff")
                     .style("stroke-width", "1px")
                     .style("opacity", "0.7")
-                    .on("click", clicked)
+                    .on("click", MapInteractions.handleClick)
                     .on("mouseover", function(event, d) {
-                        if (selectedDistrict) {
-                            currentHoverDistrict = d;
+                        if (MapState.selectedDistrict) {
+                            MapState.currentHoverDistrict = d;
                             d3.select(this).classed("hover-district", true);
                             showHeadquarterInfo(d);
                         }
                     })
                     .on("mouseout", function() {
-                        if (selectedDistrict) {
-                            currentHoverDistrict = null;
+                        if (MapState.selectedDistrict) {
+                            MapState.currentHoverDistrict = null;
                             d3.select(this).classed("hover-district", false);
-                            updateLegend(selectedDistrict);
+                            updateLegend(MapState.selectedDistrict);
                         }
                     });
 
@@ -219,7 +346,7 @@ function loadLayerData(layerType) {
             // Calculate the correct scale factor
             const SCALE_FACTOR = NEPAL_TOTAL_AREA_KM2 / totalAreaInPixels;
             
-            layerData = data.features.map(d => {
+            MapState.layerData = data.features.map(d => {
                 const areaInPixels = path.area(d);
                 const areaKm2 = Math.round(areaInPixels * SCALE_FACTOR);
                 
@@ -239,34 +366,23 @@ function loadLayerData(layerType) {
 
             // Draw the regions
             mapGroup.selectAll(".region")
-                .data(layerData)
+                .data(MapState.layerData)
                 .enter()
                 .append("path")
                 .attr("class", "district")
                 .attr("d", path)
                 .style("fill", "#2c3e50")
                 .style("opacity", "0.7")
-                .on("click", clicked)
-                .on("mouseover", function(event, d) {
-                    if (selectedDistrict) {
-                        currentHoverDistrict = d;
-                        d3.select(this).classed("hover-district", true);
-                        compareDistricts(selectedDistrict, d);
-                    }
-                })
-                .on("mouseout", function() {
-                    if (selectedDistrict) {
-                        currentHoverDistrict = null;
-                        d3.select(this).classed("hover-district", false);
-                        equivalentGroup.selectAll(".equivalent-area").remove();
-                        updateLegend(selectedDistrict);
-                    }
-                });
+                .style("cursor", "pointer")
+                .attr("data-id", d => d.properties.name)
+                .on("click", MapInteractions.handleClick)
+                .on("mouseover", MapInteractions.handleHover)
+                .on("mouseout", MapInteractions.handleHoverEnd);
 
             // Add labels if configured for this layer
             if (config.showLabels) {
                 mapGroup.selectAll(".region-label")
-                    .data(layerData)
+                    .data(MapState.layerData)
                     .enter()
                     .append("text")
                     .attr("class", "region-label")
@@ -297,27 +413,64 @@ function loadLayerData(layerType) {
         });
 }
 
-function clicked(event, d) {
-    if (selectedDistrict) {
-        mapGroup.selectAll(".district")
-            .filter(c => c === selectedDistrict)
-            .classed("hover-district", false);
+// Modal functionality
+const modal = document.getElementById('instructionModal');
+const infoButton = document.getElementById('infoButton');
+const closeButton = document.querySelector('.close-button');
+
+infoButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    modal.style.display = 'block';
+});
+
+closeButton.addEventListener('click', (event) => {
+    event.stopPropagation();
+    modal.style.display = 'none';
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
     }
-    
-    hoverGroup.selectAll("*").remove();
-    equivalentGroup.selectAll(".equivalent-area").remove();
-    
-    selectedDistrict = d;
-    
-    mapGroup.selectAll(".selected-district").classed("selected-district", false);
-    d3.select(event.target)
-        .classed("selected-district", true)
-        .classed("hover-district", false);
-    
-    updateLegend(d);
+});
+
+// Show modal on first visit
+if (!localStorage.getItem('hasVisitedBefore')) {
+    modal.style.display = 'block';
+    localStorage.setItem('hasVisitedBefore', 'true');
 }
 
 function compareDistricts(selected, hovered) {
+    // If we're in frozen state, use the frozen districts
+    if (MapState.isHoverPaused) {
+        selected = MapState.frozenSelectedDistrict;
+        hovered = MapState.frozenHoverDistrict;
+    }
+    
+    // If we don't have valid data for comparison, show only selected district info
+    if (!hovered || !hovered.properties || !hovered.properties.areaKm2) {
+        const legendContent = `
+            <div class="legend-container">
+                <div class="selected-info">
+                    <h3>Selected Region</h3>
+                    <div class="region-card selected-card">
+                        <strong>${selected.properties.name}</strong>
+                        <p>Area: ${selected.properties.areaKm2.toLocaleString()} km²</p>
+                        ${getAdditionalInfo(selected)}
+                    </div>
+                </div>
+                ${!MapState.isHoverPaused ? `
+                    <hr>
+                    <div class="hover-instruction">
+                        <p>Hover over another region within Nepal to compare areas</p>
+                    </div>
+                ` : ''}
+            </div>
+        `;
+        d3.select("#legend").html(legendContent);
+        return;
+    }
+    
     const selectedArea = selected.properties.areaKm2;
     const hoveredArea = hovered.properties.areaKm2;
     const ratio = hoveredArea / selectedArea;
@@ -332,7 +485,7 @@ function compareDistricts(selected, hovered) {
     // If hovered district is larger, show how many selected districts fit inside it
     if (hoveredArea > selectedArea) {
         // Calculate distances from hover district to all other districts
-        const distancesFromHover = layerData
+        const distancesFromHover = MapState.layerData
             .filter(d => d !== selected && d !== hovered)
             .map(d => {
                 const dx = d.centroid[0] - hovered.centroid[0];
@@ -349,10 +502,9 @@ function compareDistricts(selected, hovered) {
         const targetArea = selectedArea;
         const tolerance = targetArea * TOLERANCE_PERCENTAGE;
 
-        coveredDistricts = [hovered]; // Start with hovered district
+        coveredDistricts = [hovered];
         let totalArea = hoveredArea;
 
-        // Add nearby districts until we reach target area
         for (const district of distancesFromHover) {
             if (Math.abs(totalArea - targetArea) <= tolerance) break;
             if (totalArea < targetArea) {
@@ -361,7 +513,6 @@ function compareDistricts(selected, hovered) {
             }
         }
 
-        // Visualize equivalent areas
         equivalentGroup.selectAll(".equivalent-area")
             .data(coveredDistricts)
             .enter()
@@ -374,7 +525,7 @@ function compareDistricts(selected, hovered) {
 
         equivalentContent = `
             <div class="equivalence-info">
-                <h4>Area Equivalence</h4>
+                <h4>Area Comparison</h4>
                 <div class="equivalence-card">
                     <p class="highlight">${ratio.toFixed(2)} ${selected.properties.name}s can fit inside ${hovered.properties.name}</p>
                     <p class="sub-info">Combined area: ${totalArea.toLocaleString()} km²</p>
@@ -382,11 +533,10 @@ function compareDistricts(selected, hovered) {
             </div>
         `;
     } else {
-        // If hovered district is smaller, show how many of it fit in selected
         const fitCount = selectedArea / hoveredArea;
         equivalentContent = `
             <div class="equivalence-info">
-                <h4>Area Equivalence</h4>
+                <h4>Area Comparison</h4>
                 <div class="equivalence-card">
                     <p class="highlight">${fitCount.toFixed(2)} ${hovered.properties.name}s can fit inside ${selected.properties.name}</p>
                 </div>
@@ -394,23 +544,22 @@ function compareDistricts(selected, hovered) {
         `;
     }
 
-    // Update legend with comparison
     const legendContent = `
         <div class="legend-container">
             <div class="selected-info">
                 <h3>Selected Region</h3>
                 <div class="region-card selected-card">
                     <strong>${selected.properties.name}</strong>
-                    <p>Province: ${selected.properties.province}</p>
                     <p>Area: ${selectedArea.toLocaleString()} km²</p>
+                    ${getAdditionalInfo(selected)}
                 </div>
             </div>
             <hr>
             <div class="comparison-info">
-                <h3>Comparison with Hovered Region</h3>
+                <h3>Comparing with</h3>
                 <div class="region-card hover-card">
                     <strong>${hovered.properties.name}</strong>
-                    <p>Province: ${hovered.properties.province}</p>
+                    ${getAdditionalInfo(hovered)}
                     <p>Area: ${hoveredArea.toLocaleString()} km²</p>
                 </div>
                 <div class="comparison-stats">
@@ -429,98 +578,45 @@ function compareDistricts(selected, hovered) {
                 </div>
                 ${equivalentContent}
             </div>
+            ${MapState.isHoverPaused ? `
+                <div class="frozen-note">
+                    This comparison is frozen. Click Reset to start a new comparison.
+                </div>
+            ` : ''}
         </div>
     `;
 
     d3.select("#legend").html(legendContent);
+}
 
-    // Add styles for the new legend format
-    const style = document.createElement('style');
-    style.textContent = `
-        .legend-container {
-            padding: 15px;
-        }
-        .region-card {
-            background: #f8f9fa;
-            border-radius: 8px;
-            padding: 12px;
-            margin: 10px 0;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .hover-card {
-            background: rgba(49, 130, 206, 0.1);
-            border: 1px solid rgba(49, 130, 206, 0.2);
-        }
-        .selected-card {
-            background: rgba(229, 62, 62, 0.1);
-            border: 1px solid rgba(229, 62, 62, 0.2);
-        }
-        .region-card strong {
-            font-size: 1.1em;
-            color: #2c3e50;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .region-card p {
-            margin: 5px 0;
-            color: #5a6c7d;
-        }
-        .comparison-stats {
-            background: #fff;
-            border-radius: 8px;
-            padding: 15px;
-            margin-top: 15px;
-            border: 1px solid #e1e8ed;
-        }
-        .equivalence-info {
-            margin-top: 20px;
-        }
-        .equivalence-info h4 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-        .equivalence-card {
-            background: #fff3cd;
-            border-radius: 8px;
-            padding: 15px;
-            border: 1px solid #ffeeba;
-        }
-        .equivalence-card .highlight {
-            color: #856404;
-            font-weight: 600;
-            font-size: 1.1em;
-            margin-bottom: 8px;
-        }
-        .equivalence-card .sub-info {
-            color: #666;
-            font-size: 0.9em;
-        }
-        .stat {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 8px 0;
-            padding: 5px 0;
-            border-bottom: 1px solid #f0f0f0;
-        }
-        .stat:last-child {
-            border-bottom: none;
-        }
-        .stat .label {
-            color: #718096;
-            font-weight: 500;
-        }
-        .stat .value {
-            color: #2d3748;
-            font-weight: 600;
-        }
-        hr {
-            border: none;
-            border-top: 2px solid #edf2f7;
-            margin: 20px 0;
-        }
-    `;
-    document.head.appendChild(style);
+// Helper function to get additional info based on region type
+function getAdditionalInfo(d) {
+    if (!d || !d.properties) return '';
+    
+    switch(MapState.currentLayer) {
+        case 'districts':
+            return `
+                <p>State: ${d.properties.ADM1_EN || 'N/A'}</p>
+                <p>District Code: ${d.properties.DIST_PCODE || 'N/A'}</p>
+            `;
+        case 'states':
+            return `
+                <p>State Code: ${d.properties.ADM1_PCODE || 'N/A'}</p>
+            `;
+        case 'municipalities':
+            return `
+                <p>District: ${d.properties.DISTRICT || 'N/A'}</p>
+                <p>Level: ${d.properties.LEVEL || 'N/A'}</p>
+            `;
+        case 'wards':
+            return `
+                <p>District: ${d.properties.DISTRICT || 'N/A'}</p>
+                <p>Zone: ${d.properties.ZONE_NAME || 'N/A'}</p>
+                <p>Region: ${d.properties.REGION || 'N/A'}</p>
+            `;
+        default:
+            return '';
+    }
 }
 
 function showHeadquarterInfo(d) {
@@ -541,17 +637,36 @@ function showHeadquarterInfo(d) {
 }
 
 function updateLegend(d) {
-    const config = MAP_CONFIG[currentLayer];
+    const config = MAP_CONFIG[MapState.currentLayer];
     const areaKm2 = d.properties.areaKm2;
     
-    let parentInfo = '';
-    if (d.properties.province && config.parentField) {
-        parentInfo = `<p>${config.parentField.split('_')[0]}: ${d.properties.province}</p>`;
-    }
-    
-    let areaInfo = '';
-    if (areaKm2 !== null) {
-        areaInfo = `<p>Area: ${areaKm2.toLocaleString()} km²</p>`;
+    let additionalInfo = '';
+    // Add specific information based on the layer type
+    switch(MapState.currentLayer) {
+        case 'districts':
+            additionalInfo = `
+                <p>State: ${d.properties.ADM1_EN}</p>
+                <p>District Code: ${d.properties.DIST_PCODE}</p>
+            `;
+            break;
+        case 'states':
+            additionalInfo = `
+                <p>State Code: ${d.properties.ADM1_PCODE}</p>
+            `;
+            break;
+        case 'municipalities':
+            additionalInfo = `
+                <p>District: ${d.properties.DISTRICT}</p>
+                <p>Level: ${d.properties.LEVEL}</p>
+            `;
+            break;
+        case 'wards':
+            additionalInfo = `
+                <p>District: ${d.properties.DISTRICT}</p>
+                <p>Zone: ${d.properties.ZONE_NAME}</p>
+                <p>Region: ${d.properties.REGION}</p>
+            `;
+            break;
     }
     
     const legendContent = `
@@ -560,16 +675,32 @@ function updateLegend(d) {
                 <h3>Selected ${config.title.slice(0, -1)}</h3>
                 <div class="region-card">
                     <strong>${d.properties.name}</strong>
-                    ${parentInfo}
-                    ${areaInfo}
+                    ${additionalInfo}
+                    <p>Area: ${areaKm2.toLocaleString()} km²</p>
                 </div>
             </div>
             <hr>
             <div class="hover-instruction">
-                <p>Hover over another region to compare areas</p>
+                <p>${MapState.isHoverPaused ? 'Click Reset to start a new comparison' : 'Hover over another region to compare areas'}</p>
             </div>
         </div>
     `;
     
     d3.select("#legend").html(legendContent);
-} 
+}
+
+// Add a handler for when mouse leaves the SVG completely
+svg.on("mouseleave", function() {
+    // If we have a frozen comparison, do nothing at all
+    if (MapState.isHoverPaused) return;
+    
+    // Just remove the hover highlight if not frozen
+    mapGroup.selectAll(".hover-district").classed("hover-district", false);
+});
+
+// Add keydown listener for escape key to close modal
+document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        modal.style.display = 'none';
+    }
+}); 

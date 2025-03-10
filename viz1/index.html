@@ -3,49 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏔️ NepalScope: District Area Explorer 🗺️</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
+    <title>NepalScope | Interactive Region Explorer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header>
         <div class="title-container">
-            <h1 class="main-title">
-                <span class="rotating-icon">🏔️</span>
-                NepalScope
-            </h1>
-            <p class="subtitle">Select & hover to compare regions!</p>
+            <h1 class="main-title">NepalScope</h1>
+            <p class="subtitle">Interactive Region Explorer</p>
         </div>
         <div class="controls">
-            <div class="layer-menu">
-                <button class="layer-button" data-layer="development-regions" style="--hover-color: #2c3e50">
-                    🌏 Development Regions
-                </button>
-                <button class="layer-button" data-layer="states" style="--hover-color: #2c3e50">
-                    🏛️ States
-                </button>
-                <button class="layer-button active" data-layer="districts" style="--hover-color: #2c3e50">
-                    📍 Districts
-                </button>
-                <button class="layer-button" data-layer="municipalities" style="--hover-color: #2c3e50">
-                    🏢 Municipalities
-                </button>
-                <button class="layer-button" data-layer="wards" style="--hover-color: #2c3e50">
-                    🏘️ Wards
-                </button>
+            <div class="layer-buttons">
+                <button class="layer-button" data-layer="development-regions">Development Regions</button>
+                <button class="layer-button" data-layer="states">States</button>
+                <button class="layer-button active" data-layer="districts">Districts</button>
+                <button class="layer-button" data-layer="municipalities">Municipalities</button>
+                <button class="layer-button" data-layer="wards">Wards</button>
             </div>
             <button id="resetMap" class="reset-button">Reset</button>
+            <button id="infoButton" class="info-button" aria-label="Information">ℹ️</button>
         </div>
     </header>
+
     <main>
-        <svg></svg>
-        <div id="legend"></div>
+        <svg aria-label="Interactive map of Nepal regions"></svg>
+        <div id="legend" role="complementary" aria-label="Region information">
+            <h3>No region selected</h3>
+            <p>Click on a region to begin</p>
+        </div>
     </main>
+
     <footer>
-        <span class="footer-text">
-            Visualized by: <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a>
-        </span>
+        <p>Visualized by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></p>
     </footer>
+
+    <!-- Modal -->
+    <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <button class="close-button" aria-label="Close">&times;</button>
+            <h2 id="modalTitle">How to Use</h2>
+            <div class="instruction-steps">
+                <div class="step mb-2">
+                    <h3>Basic Controls</h3>
+                    <ul>
+                        <li>Click a region to select it</li>
+                        <li>Hover over other regions to compare</li>
+                        <li>Click while hovering to freeze comparison</li>
+                        <li>Use Reset to start over</li>
+                    </ul>
+                </div>
+                <div class="step">
+                    <h3>Layer Selection</h3>
+                    <p>Use the buttons above to switch between different administrative divisions of Nepal</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
