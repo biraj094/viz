@@ -1,6 +1,6 @@
 # Visualization Collection
 
-A curated collection of interactive data visualizations created by [Biraj Koirala](https://birajkoirala.com.np).
+A curated collection of interactive data visualizations created by <a href="https://birajkoirala.com.np" target="_blank">Biraj Koirala</a>.
 
 ## Overview
 
@@ -15,7 +15,7 @@ An interactive tool for exploring Nepal's administrative divisions. Compare diff
 
 - **Technologies**: D3.js
 - **Features**: Compare Districts
-- **Demo**: [Launch NepalScope](./viz1/index.html)
+- **Demo**: <a href="https://biraj094.github.io/viz/viz1/" target="_blank">Launch NepalScope</a>
 
 ### 2. GeoScope
 ![GeoScope Preview](./viz2/preview.jpg)
@@ -24,18 +24,18 @@ An interactive geographical visualization tool that enables direct visual compar
 
 - **Technologies**: D3.js
 - **Features**: Compare Countries
-- **Demo**: [Launch GeoScope](./viz2/index.html)
+- **Demo**: <a href="https://biraj094.github.io/viz/viz2/" target="_blank">Launch GeoScope</a>
 
 ### 3. Bigha Busters
 ![Bigha Busters Preview](./static/screenshots/bigha-busters.jpg)
 
-A fun and practical tool that converts Nepali land units into relatable real-world references. Built using [rupantaran](https://github.com/biraj094/rupantaran), an open-source Python package for Nepali measurement conversions.
+A fun and practical tool that converts Nepali land units into relatable real-world references. Built using <a href="https://github.com/biraj094/rupantaran" target="_blank">rupantaran</a>, an open-source Python package for Nepali measurement conversions.
 
 - **Technologies**: Streamlit, Python
 - **Features**: Land Conversion
-- **Package**: [rupantaran](https://github.com/biraj094/rupantaran) ([Documentation](https://rupantaran.readthedocs.io/en/latest/))
-- **Demo**: [Launch Bigha Busters](https://bigha-busters.streamlit.app/)
+- **Package**: <a href="https://github.com/biraj094/rupantaran" target="_blank">rupantaran</a> (<a href="https://rupantaran.readthedocs.io/en/latest/" target="_blank">Documentation</a>)
+- **Demo**: <a href="https://bigha-busters.streamlit.app/" target="_blank">Launch Bigha Busters</a>
 
 ## License
 
-© 2024 Biraj Koirala
+© 2024 Biraj Koirala. All rights reserved.
