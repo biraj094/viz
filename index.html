@@ -3,457 +3,355 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Visualization Collection</title>
+    <title>Visualization Collection — Biraj Koirala</title>
     <link rel="icon" type="image/png" href="favico.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --secondary-color: #3498db;
-            --background-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --border-color: #e1e4e8;
+            --bg: #faf8f3;
+            --surface: #ffffff;
+            --text: #1a1a1a;
+            --text-muted: #6b6b6b;
+            --border: #e8e3d8;
+            --border-strong: #d4cec0;
+            --accent: #b8532a;
         }
+
+        *, *::before, *::after { box-sizing: border-box; }
+
+        html { -webkit-text-size-adjust: 100%; }
 
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            line-height: 1.6;
             margin: 0;
-            padding: 2rem;
-            min-height: 100vh;
-            background: var(--background-gradient);
-            color: var(--primary-color);
-            display: flex;
-            flex-direction: column;
+            font-family: 'DM Sans', system-ui, -apple-system, sans-serif;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--text);
+            background: var(--bg);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
-        .container {
-            max-width: 1200px;
+        .page {
+            max-width: 1100px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: 400px 1fr;
-            gap: 2rem;
-            flex: 1;
+            padding: 4rem 1.5rem 2rem;
         }
 
-        .header {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 2rem;
+        /* Header */
+        header {
+            margin-bottom: 3.5rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
         }
 
         h1 {
-            margin-bottom: 0.5rem;
-            font-weight: 300;
-            font-size: 2.5rem;
-            color: var(--primary-color);
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 400;
+            font-size: clamp(2.25rem, 6vw, 3.75rem);
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin: 0 0 1rem;
         }
 
-        .subtitle {
-            color: #666;
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+        h1 em {
+            font-style: italic;
+            color: var(--accent);
         }
 
-        .subtitle a {
-            color: var(--secondary-color);
-            text-decoration: none;
-        }
-
-        .subtitle a:hover {
-            text-decoration: underline;
-        }
-
-        .viz-count {
-            color: #666;
-            font-size: 0.9rem;
-        }
-
-        .viz-list {
-            list-style: none;
-            padding: 0;
+        .byline {
+            color: var(--text-muted);
+            font-size: 1rem;
             margin: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-height: calc(100vh - 150px);
-            overflow-y: auto;
+            max-width: 48ch;
         }
 
-        .viz-item {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: background-color 0.2s ease;
+        .byline a {
+            color: var(--text);
+            text-decoration: none;
+            border-bottom: 1px solid var(--border-strong);
+            padding-bottom: 1px;
+            transition: border-color 0.2s ease;
+        }
+
+        .byline a:hover, .byline a:focus-visible {
+            border-color: var(--accent);
+        }
+
+        .meta {
+            display: inline-block;
+            margin-top: 1.25rem;
+            font-size: 0.75rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+        }
+
+        /* Grid of cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.75rem;
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            overflow: hidden;
             display: flex;
-            align-items: flex-start;
+            flex-direction: column;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
-        .viz-item:hover {
-            background-color: #f8f9fa;
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 28px rgba(40, 30, 20, 0.06);
+            border-color: var(--border-strong);
         }
 
-        .viz-item.active {
-            background-color: #e8f4ff;
-            border-left: 4px solid var(--secondary-color);
+        .card-image {
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            background: #efeae0;
         }
 
-        .viz-number {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: var(--secondary-color);
-            margin-right: 1rem;
-            min-width: 25px;
+        .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.6s ease;
         }
 
-        .viz-item-content {
+        .card:hover .card-image img {
+            transform: scale(1.03);
+        }
+
+        .card-body {
+            padding: 1.75rem;
+            display: flex;
+            flex-direction: column;
             flex: 1;
         }
 
-        .viz-item-title {
-            font-size: 1rem;
-            margin: 0 0 0.5rem;
-            color: var(--primary-color);
+        .card-number {
+            font-family: 'Fraunces', Georgia, serif;
+            font-style: italic;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
         }
 
-        .tags-container {
+        .card-title {
+            font-family: 'Fraunces', Georgia, serif;
+            font-weight: 400;
+            font-size: 1.75rem;
+            line-height: 1.15;
+            letter-spacing: -0.01em;
+            margin: 0 0 1rem;
+            color: var(--text);
+        }
+
+        /* Tags */
+        .tags {
             display: flex;
             flex-wrap: wrap;
             gap: 0.4rem;
+            margin-bottom: 1.25rem;
         }
 
-        .viz-badge {
-            display: inline-block;
-            padding: 0.15rem 0.5rem;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 500;
-            margin: 0.1rem;
+        .tag {
+            font-size: 0.72rem;
+            padding: 0.2rem 0.65rem;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            background: transparent;
+            letter-spacing: 0.02em;
+            white-space: nowrap;
         }
 
-        .viz-badge.location {
-            background: #e8f4ff;
-            color: var(--secondary-color);
+        .tag.location { color: #1e40af; background: #eff6ff; border-color: #dbeafe; }
+        .tag.tech     { color: #166534; background: #f0fdf4; border-color: #dcfce7; }
+        .tag.feature  { color: #9a3412; background: #fff7ed; border-color: #fed7aa; }
+        .tag.package  { color: #6b21a8; background: #faf5ff; border-color: #f3e8ff; }
+
+        .card-description {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.65;
+            margin: 0 0 1.75rem;
+            flex: 1;
         }
 
-        .viz-badge.tech {
-            background: #f0fff4;
-            color: #2f855a;
+        .card-description a {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
         }
 
-        .viz-badge.feature {
-            background: #fff5f5;
-            color: #c53030;
+        .card-description a:hover, .card-description a:focus-visible {
+            border-bottom-color: var(--accent);
         }
 
-        .viz-badge.package {
-            background: #faf5ff;
-            color: #6b46c1;
-        }
-
-        .viz-badge.docs {
-            background: #fffaf0;
-            color: #dd6b20;
-        }
-
-        .viz-details {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            padding: 2rem;
-            position: sticky;
-            top: 2rem;
-        }
-
-        .viz-details.empty {
-            display: flex;
+        .card-link {
+            display: inline-flex;
             align-items: center;
-            justify-content: center;
-            min-height: 400px;
-            color: #666;
-            font-style: italic;
+            gap: 0.5rem;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 500;
+            align-self: flex-start;
+            padding-bottom: 3px;
+            border-bottom: 1px solid var(--text);
+            transition: color 0.2s ease, border-color 0.2s ease;
         }
 
-        .viz-preview {
-            margin-bottom: 1.5rem;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        .card-link:hover, .card-link:focus-visible {
+            color: var(--accent);
+            border-color: var(--accent);
+            outline: none;
         }
 
-        .viz-preview img {
-            width: 100%;
-            height: auto;
-            display: block;
+        .card-link .arrow {
+            display: inline-block;
+            transition: transform 0.2s ease;
         }
 
-        .viz-content h2 {
-            margin: 0 0 1rem;
-            color: var(--primary-color);
+        .card-link:hover .arrow {
+            transform: translateX(3px);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-muted);
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
 
-        .viz-content p {
-            color: #555;
-            margin-bottom: 1.5rem;
-            line-height: 1.6;
-        }
-
-        .viz-link {
-            display: inline-block;
-            background: var(--secondary-color);
-            color: white;
+        footer a {
+            color: var(--text);
             text-decoration: none;
-            padding: 0.8rem 1.5rem;
-            border-radius: 6px;
-            transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--border-strong);
+            transition: border-color 0.2s ease;
         }
 
-        .viz-link:hover {
-            background-color: #2980b9;
+        footer a:hover, footer a:focus-visible {
+            border-color: var(--accent);
         }
 
-        .footer {
-            text-align: center;
-            padding: 2rem 0 1rem;
-            color: #666;
-            font-size: 0.9rem;
+        /* Mobile */
+        @media (max-width: 640px) {
+            .page { padding: 2.5rem 1.25rem 1.5rem; }
+            header { margin-bottom: 2.5rem; padding-bottom: 1.5rem; }
+            .grid { grid-template-columns: 1fr; gap: 1.25rem; }
+            .card-body { padding: 1.5rem; }
+            .card-title { font-size: 1.5rem; }
+            footer { font-size: 0.8rem; }
         }
 
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-                padding: 1rem;
-                gap: 1rem;
-            }
-
-            .viz-details {
-                margin-top: 1rem;
-                position: static;
-                padding: 1.5rem;
-            }
-
-            body {
-                padding: 1rem;
-            }
-
-            h1 {
-                font-size: 2rem;
-            }
-
-            .viz-list {
-                max-height: none;
-                margin-bottom: 1rem;
-            }
+        @media (max-width: 380px) {
+            .page { padding: 2rem 1rem 1rem; }
+            .card-body { padding: 1.25rem; }
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 0.5rem;
+        /* Respect user motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                transition-duration: 0.01ms !important;
+                animation-duration: 0.01ms !important;
             }
-
-            .container {
-                padding: 0.5rem;
-                gap: 0.75rem;
-            }
-
-            h1 {
-                font-size: 1.75rem;
-            }
-
-            .subtitle {
-                font-size: 1rem;
-            }
-
-            .viz-item {
-                padding: 0.5rem;
-            }
-
-            .viz-details {
-                padding: 1rem;
-            }
-
-            .viz-content h2 {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.5rem;
-            }
-
-            .tags-container {
-                gap: 0.25rem;
-            }
-
-            .viz-badge {
-                font-size: 0.7rem;
-                padding: 0.1rem 0.4rem;
-            }
-
-            .viz-link {
-                width: 100%;
-                text-align: center;
-                padding: 0.6rem 1rem;
-            }
-        }
-
-        @media (min-width: 769px) and (max-width: 1024px) {
-            .container {
-                grid-template-columns: 300px 1fr;
-                gap: 1.5rem;
-            }
-
-            .viz-details {
-                padding: 1.5rem;
-            }
-        }
-
-        @media (min-width: 1025px) {
-            .container {
-                max-width: 1400px;
-            }
-        }
-
-        @media (hover: none) {
-            .viz-item:hover {
-                background-color: inherit;
-            }
+            .card:hover { transform: none; }
+            .card:hover .card-image img { transform: none; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Visualization Collection</h1>
-            <div class="subtitle">List of visualizations visualized by <a href="https://birajkoirala.com.np" target="_blank">Biraj Koirala</a></div>
-            <div class="viz-count">Total Visualizations: (3)</div>
-        </div>
-        
-        <ul class="viz-list">
-            <li class="viz-item active" onclick="showVizDetails('viz1')">
-                <div class="viz-number">1</div>
-                <div class="viz-item-content">
-                    <h3 class="viz-item-title">NepalScope</h3>
-                    <div class="tags-container">
-                        <span class="viz-badge location">Nepal</span>
-                        <span class="viz-badge tech">D3.js</span>
-                        <span class="viz-badge feature">Compare Districts</span>
+    <main class="page">
+        <header>
+            <h1>Visualization <em>Collection</em></h1>
+            <p class="byline">A series of interactive data explorations by <a href="https://birajkoirala.com.np" target="_blank" rel="noopener noreferrer">Biraj Koirala</a>.</p>
+        </header>
+
+        <section class="grid" aria-label="Visualizations">
+            <!-- Bigha Busters -->
+            <article class="card">
+                <div class="card-image">
+                    <img src="./static/screenshots/bigha-busters.jpg" alt="Bigha Busters preview" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/800x500/efeae0/6b6b6b?text=Preview+Coming+Soon';">
+                </div>
+                <div class="card-body">
+                    <div class="card-number">01</div>
+                    <h2 class="card-title">Bigha Busters</h2>
+                    <div class="tags">
+                        <span class="tag location">Nepal</span>
+                        <span class="tag tech">Streamlit</span>
+                        <span class="tag tech">Python</span>
+                        <span class="tag feature">Land Conversion</span>
+                        <span class="tag package">rupantaran</span>
                     </div>
+                    <p class="card-description">A quirky tool that converts Nepali land units into relatable real-world references. Ever wondered how many basketball courts fit in your plot, or whether your backyard is bigger than the Great Pyramid's base? Built using <a href="https://github.com/biraj094/rupantaran" target="_blank" rel="noopener noreferrer">rupantaran</a>, an open-source Python package for Nepali measurement conversions (<a href="https://rupantaran.readthedocs.io/en/latest/" target="_blank" rel="noopener noreferrer">docs</a>).</p>
+                    <a href="https://bigha-busters.streamlit.app/" target="_blank" rel="noopener noreferrer" class="card-link">
+                        Open visualization <span class="arrow" aria-hidden="true">→</span>
+                    </a>
                 </div>
-            </li>
-            <li class="viz-item" onclick="showVizDetails('viz2')">
-                <div class="viz-number">2</div>
-                <div class="viz-item-content">
-                    <h3 class="viz-item-title">GeoScope</h3>
-                    <div class="tags-container">
-                        <span class="viz-badge location">Global</span>
-                        <span class="viz-badge tech">D3.js</span>
-                        <span class="viz-badge feature">Compare Countries</span>
+            </article>
+
+            <!-- NepalScope -->
+            <article class="card">
+                <div class="card-image">
+                    <img src="./viz1/preview.jpg" alt="NepalScope preview" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/800x500/efeae0/6b6b6b?text=Preview+Coming+Soon';">
+                </div>
+                <div class="card-body">
+                    <div class="card-number">02</div>
+                    <h2 class="card-title">NepalScope</h2>
+                    <div class="tags">
+                        <span class="tag location">Nepal</span>
+                        <span class="tag tech">D3.js</span>
+                        <span class="tag feature">Compare Districts</span>
                     </div>
+                    <p class="card-description">A comprehensive tool for exploring Nepal's administrative divisions. Compare development regions down to individual wards through an intuitive interface — useful for researchers, policy makers, and anyone curious about Nepal's administrative geography.</p>
+                    <a href="./viz1/index.html" target="_blank" rel="noopener noreferrer" class="card-link">
+                        Open visualization <span class="arrow" aria-hidden="true">→</span>
+                    </a>
                 </div>
-            </li>
-            <li class="viz-item" onclick="showVizDetails('viz3')">
-                <div class="viz-number">3</div>
-                <div class="viz-item-content">
-                    <h3 class="viz-item-title">Bigha Busters</h3>
-                    <div class="tags-container">
-                        <span class="viz-badge location">Nepal</span>
-                        <span class="viz-badge tech">Streamlit</span>
-                        <span class="viz-badge tech">Python</span>
-                        <span class="viz-badge feature">Land Conversion</span>
-                        <span class="viz-badge package">rupantaran</span>
+            </article>
+
+            <!-- GeoScope -->
+            <article class="card">
+                <div class="card-image">
+                    <img src="./viz2/preview.jpg" alt="GeoScope preview" loading="lazy" onerror="this.onerror=null;this.src='https://placehold.co/800x500/efeae0/6b6b6b?text=Preview+Coming+Soon';">
+                </div>
+                <div class="card-body">
+                    <div class="card-number">03</div>
+                    <h2 class="card-title">GeoScope</h2>
+                    <div class="tags">
+                        <span class="tag location">Global</span>
+                        <span class="tag tech">D3.js</span>
+                        <span class="tag feature">Compare Countries</span>
                     </div>
+                    <p class="card-description">An interactive geographical tool that brings country size comparisons to life. Select any country and see how it measures up against others — making abstract area measurements tangible through direct visual comparison.</p>
+                    <a href="./viz2/index.html" target="_blank" rel="noopener noreferrer" class="card-link">
+                        Open visualization <span class="arrow" aria-hidden="true">→</span>
+                    </a>
                 </div>
-            </li>
-        </ul>
+            </article>
+        </section>
 
-        <div id="viz-details" class="viz-details empty">
-            Select a visualization to see details
-        </div>
-    </div>
-
-    <footer class="footer">
-        © 2024 Biraj Koirala. All rights reserved.
-    </footer>
-
-    <div class="footer">
-        <p>Created by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></p>
-    </div>
-    <script src="mobile-detect.js"></script>
-    <script>
-        const vizData = {
-            viz1: {
-                title: "NepalScope",
-                tags: {
-                    location: ["Nepal"],
-                    tech: ["D3.js"],
-                    feature: ["Compare Districts"]
-                },
-                image: "./viz1/preview.jpg",
-                summary: "NepalScope is a comprehensive visualization tool for exploring Nepal's administrative divisions. It provides an intuitive interface for comparing different administrative levels, from development regions down to individual wards. Essential for researchers, policy makers, and anyone interested in Nepal's administrative geography.",
-                link: "./viz1/index.html"
-            },
-            viz2: {
-                title: "GeoScope",
-                tags: {
-                    location: ["Global"],
-                    tech: ["D3.js"],
-                    feature: ["Compare Countries"]
-                },
-                image: "./viz2/preview.jpg",
-                summary: "GeoScope is an interactive geographical visualization tool that brings country size comparisons to life. It allows users to select any country and instantly see how it measures up against others, making abstract area measurements tangible through direct visual comparisons. Perfect for educators, students, or anyone curious about global geography.",
-                link: "./viz2/index.html"
-            },
-            viz3: {
-                title: "Bigha Busters",
-                tags: {
-                    location: ["Nepal"],
-                    tech: ["Streamlit", "Python"],
-                    feature: ["Land Conversion"],
-                    package: ["rupantaran"]
-                },
-                image: "./static/screenshots/bigha-busters.jpg",
-                summary: "Bigha Busters is a quirky tool that converts Nepali land units into relatable real-world references. Ever wondered how many basketball courts could fit in your plot? Or if your backyard is larger than the Great Pyramid's base? This fun tool gives you intuitive comparisons, making land measurements more engaging and understandable. Built using <a href='https://github.com/biraj094/rupantaran' target='_blank'>rupantaran</a>, an open-source Python package for Nepali measurement conversions (<a href='https://rupantaran.readthedocs.io/en/latest/' target='_blank'>documentation</a>).",
-                link: "https://bigha-busters.streamlit.app/"
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', function() {
-            showVizDetails('viz1');
-        });
-
-        function showVizDetails(vizId) {
-            // Update active state in list
-            document.querySelectorAll('.viz-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            document.querySelector(`.viz-item[onclick*="${vizId}"]`).classList.add('active');
-
-            // Get viz data
-            const viz = vizData[vizId];
-            
-            // Generate details HTML
-            const detailsHtml = `
-                <div class="viz-preview">
-                    <img src="${viz.image}" alt="${viz.title} preview" onerror="this.src='https://via.placeholder.com/800x400?text=Preview+Coming+Soon'">
-                </div>
-                <div class="viz-content">
-                    <h2>
-                        ${viz.title}
-                        <div class="tags-container">
-                            ${Object.entries(viz.tags).map(([type, values]) => 
-                                values.map(value => `<span class="viz-badge ${type}">${value}</span>`).join('')
-                            ).join('')}
-                        </div>
-                    </h2>
-                    <p>${viz.summary}</p>
-                    <a href="${viz.link}" class="viz-link" target="_blank">Open Visualization</a>
-                </div>
-            `;
-
-            // Update details container
-            const detailsContainer = document.getElementById('viz-details');
-            detailsContainer.classList.remove('empty');
-            detailsContainer.innerHTML = detailsHtml;
-        }
-    </script>
+        <footer>
+            <span>© 2024 Biraj Koirala</span>
+            <span>Crafted by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></span>
+        </footer>
+    </main>
 </body>
 </html>
