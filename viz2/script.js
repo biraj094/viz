@@ -6,7 +6,7 @@ const projection = d3.geoMercator()
     .scale(width / 6)
     .translate([width / 2, height / 1.65]);
 
-const path = d3.geoPath().projection(projection);
+let path = d3.geoPath().projection(projection);
 
 const mapGroup = svg.append("g");
 const equivalentGroup = svg.append("g");
@@ -301,3 +301,21 @@ learnButton.addEventListener('click', e => { e.stopPropagation(); modal.style.di
 closeButton.addEventListener('click', e => { e.stopPropagation(); modal.style.display = 'none'; });
 window.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') modal.style.display = 'none'; });
+
+// ─── Responsive redraw ───────────────────────────────────────────
+
+function handleResize() {
+    const w = svg.node().clientWidth;
+    const h = svg.node().clientHeight;
+    projection.scale(w / 6).translate([w / 2, h / 1.65]);
+    path = d3.geoPath().projection(projection);
+    mapGroup.selectAll(".country").attr("d", path);
+    equivalentGroup.selectAll(".equivalent-area").attr("d", path);
+    worldData.forEach(d => { d.centroid = path.centroid(d); });
+}
+
+let _resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(handleResize, 150);
+});

@@ -57,7 +57,7 @@ const projection = d3.geoMercator()
     .scale(width * 5.5)
     .translate([width / 2, height / 2]);
 
-const path = d3.geoPath().projection(projection);
+let path = d3.geoPath().projection(projection);
 
 const mapGroup = svg.append("g");
 const hoverGroup = svg.append("g");
@@ -512,6 +512,29 @@ function getMetaHTML(d) {
 svg.on("mouseleave", function () {
     if (MapState.isHoverPaused) return;
     mapGroup.selectAll(".hover-district").classed("hover-district", false);
+});
+
+// ─── Responsive redraw ───────────────────────────────────────────
+
+function handleResize() {
+    const w = svg.node().clientWidth;
+    const h = svg.node().clientHeight;
+    projection.scale(w * 5.5).translate([w / 2, h / 2]);
+    path = d3.geoPath().projection(projection);
+    mapGroup.selectAll(".district").attr("d", path);
+    if (MapState.layerData.length > 0) {
+        MapState.layerData.forEach(d => { d.centroid = path.centroid(d); });
+        mapGroup.selectAll(".region-label")
+            .attr("x", d => d.centroid[0])
+            .attr("y", d => d.centroid[1]);
+    }
+    equivalentGroup.selectAll(".equivalent-area").attr("d", path);
+}
+
+let _resizeTimer;
+window.addEventListener('resize', () => {
+    clearTimeout(_resizeTimer);
+    _resizeTimer = setTimeout(handleResize, 150);
 });
 
 // ─── Modal ───────────────────────────────────────────────────────
