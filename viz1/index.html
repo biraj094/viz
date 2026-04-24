@@ -64,7 +64,7 @@
                 </div>
                 <div class="action-buttons">
                     <button id="resetMap" class="reset-button">Reset</button>
-                    <button id="infoButton" class="info-button" aria-label="How to use">?</button>
+                    <button id="infoButton" class="info-button" aria-label="How to use">How to use</button>
                 </div>
             </div>
         </header>
@@ -75,6 +75,7 @@
                 <div class="loading-overlay hidden" id="loadingOverlay">
                     <div class="spinner"></div>
                     <span class="loading-text" id="loadingText">Loading…</span>
+                    <span class="loading-hint" id="loadingHint"></span>
                 </div>
             </div>
             <div id="legend" role="complementary" aria-label="Region information">
@@ -91,24 +92,27 @@
         <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
             <div class="modal-content">
                 <button class="close-button" aria-label="Close" type="button">&times;</button>
-                <h2 id="modalTitle">How to Use</h2>
+                <h2 id="modalTitle">How to Use NepalScope</h2>
                 <div class="instruction-steps">
                     <div class="step">
-                        <h3>Basic Controls</h3>
+                        <h3>Choose a Layer</h3>
+                        <p>Use the header buttons to set the granularity — from <strong>5 Development Regions</strong> down to <strong>36,000+ Wards</strong>. The map reloads with the selected administrative level.</p>
+                    </div>
+                    <div class="step">
+                        <h3>Select &amp; Compare</h3>
                         <ul>
-                            <li>Click a region to select it</li>
-                            <li>Hover over other regions to compare areas</li>
+                            <li>Click a region to set it as your reference</li>
+                            <li>Hover over any other region to compare areas in real time</li>
                             <li>Click while hovering to freeze the comparison</li>
-                            <li>Use Reset to start over</li>
                         </ul>
                     </div>
                     <div class="step">
-                        <h3>Layer Selection</h3>
-                        <p>Switch between Development Regions, States, Districts, Municipalities, or Wards using the buttons in the header.</p>
+                        <h3>Insights Panel</h3>
+                        <p>The right panel shows each region's area, its rank among all regions, its parent province or district, and a size ratio when two regions are compared.</p>
                     </div>
                     <div class="step">
-                        <h3>Insights Panel</h3>
-                        <p>The panel on the right shows layer statistics, selected region details, and area comparisons as you explore.</p>
+                        <h3>Reset</h3>
+                        <p>Click <strong>Reset</strong> to clear the current selection and start a fresh comparison.</p>
                     </div>
                 </div>
             </div>

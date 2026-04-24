@@ -105,8 +105,9 @@ const MapState = {
 
 // ─── Loading overlay ─────────────────────────────────────────────
 
-function showLoading(layerTitle) {
+function showLoading(layerTitle, hint) {
     document.getElementById('loadingText').textContent = `Loading ${layerTitle}…`;
+    document.getElementById('loadingHint').textContent = hint || '';
     document.getElementById('loadingOverlay').classList.remove('hidden');
 }
 
@@ -228,7 +229,11 @@ function loadLayerData(layerType) {
     const config = MAP_CONFIG[layerType];
     if (!config) return;
 
-    showLoading(config.title);
+    const slowHints = {
+        wards: 'Large dataset (36,000+ wards) — may take a moment',
+        municipalities: 'Large dataset — may take a few seconds'
+    };
+    showLoading(config.title, slowHints[layerType]);
 
     mapGroup.selectAll("*").remove();
     hoverGroup.selectAll("*").remove();

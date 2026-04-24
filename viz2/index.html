@@ -52,7 +52,7 @@
             </div>
             <div class="header-actions">
                 <button id="resetMap" class="reset-button">Reset</button>
-                <button id="learnButton" class="info-button" aria-label="How to use">?</button>
+                <button id="learnButton" class="info-button" aria-label="How to use">How to use</button>
             </div>
         </header>
 
@@ -76,28 +76,28 @@
                 <h2 id="modalTitle">How to Use GeoScope</h2>
                 <div class="instruction-steps">
                     <div class="step">
-                        <h3>Basic Controls</h3>
-                        <ul>
-                            <li>Click any country to select it as your reference</li>
-                            <li>Hover over other countries to compare their areas</li>
-                            <li>Click while hovering to freeze the comparison</li>
-                            <li>Click Reset to start over</li>
-                        </ul>
+                        <h3>Select a Country</h3>
+                        <p>Click any country to set it as your reference. The panel shows its total area and how it ranks globally.</p>
                     </div>
                     <div class="step">
-                        <h3>What You'll See</h3>
+                        <h3>Compare Sizes</h3>
+                        <p>Hover over another country to see how it measures up:</p>
                         <ul>
-                            <li><strong>Larger countries:</strong> How many times your reference fits inside</li>
-                            <li><strong>Smaller countries:</strong> Nearby countries combined to match your reference area</li>
+                            <li><strong>Larger country</strong> — how many times your reference fits inside it</li>
+                            <li><strong>Smaller country</strong> — nearby countries are highlighted whose combined area matches your reference</li>
                         </ul>
                     </div>
                     <div class="step">
                         <h3>Color Guide</h3>
                         <ul>
-                            <li><span class="color-dot selected-dot"></span> Selected country</li>
-                            <li><span class="color-dot hover-dot"></span> Hovered country</li>
-                            <li><span class="color-dot equiv-dot"></span> Equivalent area countries</li>
+                            <li><span class="color-dot selected-dot"></span> Your selected reference country</li>
+                            <li><span class="color-dot hover-dot"></span> The country you're hovering</li>
+                            <li><span class="color-dot equiv-dot"></span> Countries combined to equal your reference area</li>
                         </ul>
+                    </div>
+                    <div class="step">
+                        <h3>Freeze &amp; Reset</h3>
+                        <p>Click while hovering to lock in a comparison. Click <strong>Reset</strong> to pick a new reference country.</p>
                     </div>
                 </div>
             </div>
