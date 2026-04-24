@@ -4,58 +4,45 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NepalScope | Interactive Region Explorer</title>
-    <!-- Favicon -->
     <link rel="icon" type="image/png" sizes="512x512" href="assets/nepal-512x512.png">
     <link rel="apple-touch-icon" sizes="180x180" href="assets/nepal-512x512.png">
     <link rel="shortcut icon" href="assets/nepal-512x512.png" type="image/png">
-    <meta name="theme-color" content="#dc143c">
+    <meta name="theme-color" content="#b8532a">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script>
-        // Function to check if the device is mobile
         function isMobileDevice() {
-            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
                    (window.innerWidth <= 768 && 'ontouchstart' in window && !/Windows NT|Macintosh|Linux/i.test(navigator.userAgent));
         }
 
-        // Function to create and show mobile notice
         function handleMobileNotice() {
             if (!isMobileDevice()) return;
-
             const notice = document.createElement('div');
             notice.id = 'mobileNotice';
-            notice.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                background: #2c3e50;
-                color: white;
-                padding: 10px 15px;
-                text-align: center;
-                font-size: 14px;
-                z-index: 1000;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 10px;
-            `;
-            
+            notice.style.cssText = [
+                'position:fixed', 'top:0', 'left:0', 'right:0',
+                'background:#ffffff', 'color:#1a1a1a',
+                'padding:6px 16px', 'text-align:center',
+                'font-size:12px', 'z-index:1000',
+                'display:flex', 'justify-content:center',
+                'align-items:center', 'gap:8px',
+                'border-bottom:1px solid #e8e3d8',
+                "font-family:'DM Sans',system-ui,sans-serif"
+            ].join(';');
             notice.innerHTML = `
-                <span>📱 For the best experience, please use a desktop browser</span>
+                <span>Best viewed on desktop — touch interactions are limited</span>
                 <button onclick="this.parentElement.remove()" style="
-                    background: none;
-                    border: none;
-                    color: white;
-                    cursor: pointer;
-                    padding: 0 5px;
-                    font-size: 16px;
+                    background:none;border:1px solid #e8e3d8;color:#6b6b6b;
+                    cursor:pointer;padding:1px 7px;font-size:13px;
+                    border-radius:999px;line-height:1.5;font-family:inherit;
                 ">×</button>
             `;
-            
             document.body.prepend(notice);
         }
 
-        // Initialize when DOM is loaded
         document.addEventListener('DOMContentLoaded', handleMobileNotice);
     </script>
 </head>
@@ -63,52 +50,65 @@
     <div class="container">
         <header>
             <div class="title-container">
-                <h1 class="main-title">NepalScope</h1>
-                <p class="subtitle">Interactive Region Explorer</p>
+                <a href="../index.html" class="back-link">← Collection</a>
+                <h1 class="main-title">Nepal<em>Scope</em></h1>
+                <span class="subtitle">Region Explorer</span>
             </div>
             <div class="controls">
                 <div class="layer-buttons">
-                    <button class="layer-button" data-layer="development-regions">Development Regions</button>
+                    <button class="layer-button" data-layer="development-regions">Dev Regions</button>
                     <button class="layer-button" data-layer="states">States</button>
                     <button class="layer-button active" data-layer="districts">Districts</button>
                     <button class="layer-button" data-layer="municipalities">Municipalities</button>
                     <button class="layer-button" data-layer="wards">Wards</button>
                 </div>
-                <button id="resetMap" class="reset-button">Reset</button>
-                <button id="infoButton" class="info-button" aria-label="Information">ℹ️</button>
+                <div class="action-buttons">
+                    <button id="resetMap" class="reset-button">Reset</button>
+                    <button id="infoButton" class="info-button" aria-label="How to use">?</button>
+                </div>
             </div>
         </header>
 
         <main>
-            <svg aria-label="Interactive map of Nepal regions"></svg>
+            <div class="map-wrapper">
+                <svg aria-label="Interactive map of Nepal regions"></svg>
+                <div class="loading-overlay hidden" id="loadingOverlay">
+                    <div class="spinner"></div>
+                    <span class="loading-text" id="loadingText">Loading…</span>
+                </div>
+            </div>
             <div id="legend" role="complementary" aria-label="Region information">
-                <h3>No region selected</h3>
-                <p>Click on a region to begin</p>
+                <p class="legend-hint">Click on a region to begin exploring</p>
             </div>
         </main>
 
         <footer>
-            <p>Visualized by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></p>
+            <span>Nepal administrative data</span>
+            <span>Visualized by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></span>
         </footer>
 
-        <!-- Modal -->
-        <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle">
+        <!-- How to use modal -->
+        <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
             <div class="modal-content">
-                <button class="close-button" aria-label="Close modal" type="button">&times;</button>
+                <button class="close-button" aria-label="Close" type="button">&times;</button>
                 <h2 id="modalTitle">How to Use</h2>
                 <div class="instruction-steps">
-                    <div class="step mb-2">
+                    <div class="step">
                         <h3>Basic Controls</h3>
                         <ul>
                             <li>Click a region to select it</li>
-                            <li>Hover over other regions to compare</li>
-                            <li>Click while hovering to freeze comparison</li>
+                            <li>Hover over other regions to compare areas</li>
+                            <li>Click while hovering to freeze the comparison</li>
                             <li>Use Reset to start over</li>
                         </ul>
                     </div>
                     <div class="step">
                         <h3>Layer Selection</h3>
-                        <p>Use the buttons above to switch between different administrative divisions of Nepal</p>
+                        <p>Switch between Development Regions, States, Districts, Municipalities, or Wards using the buttons in the header.</p>
+                    </div>
+                    <div class="step">
+                        <h3>Insights Panel</h3>
+                        <p>The panel on the right shows layer statistics, selected region details, and area comparisons as you explore.</p>
                     </div>
                 </div>
             </div>
@@ -118,4 +118,4 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="script.js"></script>
 </body>
-</html> 
+</html>

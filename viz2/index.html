@@ -4,80 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/png" href="assets/planet-earth.png">
-    <title>🌈 GeoScope: Country Area Explorer 🗺️</title>
+    <title>GeoScope | LandScale Explorer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/css/flag-icon.min.css">
     <link rel="stylesheet" href="style.css">
+    <script>
+        function isMobileDevice() {
+            return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+                   (window.innerWidth <= 768 && 'ontouchstart' in window && !/Windows NT|Macintosh|Linux/i.test(navigator.userAgent));
+        }
+        function handleMobileNotice() {
+            if (!isMobileDevice()) return;
+            const notice = document.createElement('div');
+            notice.id = 'mobileNotice';
+            notice.style.cssText = [
+                'position:fixed', 'top:0', 'left:0', 'right:0',
+                'background:#ffffff', 'color:#1a1a1a',
+                'padding:6px 16px', 'text-align:center',
+                'font-size:12px', 'z-index:1000',
+                'display:flex', 'justify-content:center',
+                'align-items:center', 'gap:8px',
+                'border-bottom:1px solid #e8e3d8',
+                "font-family:'DM Sans',system-ui,sans-serif"
+            ].join(';');
+            notice.innerHTML = `
+                <span>Best viewed on desktop — touch interactions are limited</span>
+                <button onclick="this.parentElement.remove()" style="
+                    background:none;border:1px solid #e8e3d8;color:#6b6b6b;
+                    cursor:pointer;padding:1px 7px;font-size:13px;
+                    border-radius:999px;line-height:1.5;font-family:inherit;
+                ">×</button>
+            `;
+            document.body.prepend(notice);
+        }
+        document.addEventListener('DOMContentLoaded', handleMobileNotice);
+    </script>
 </head>
 <body>
-    <!-- Mobile Notice Modal -->
-    <div id="mobileNoticeModal" class="modal" role="dialog" aria-labelledby="mobileNoticeTitle">
-        <div class="modal-content">
-            <button class="close-button" aria-label="Close">&times;</button>
-            <h2 id="mobileNoticeTitle">📱 Mobile Device Detected</h2>
-            <div class="mobile-notice">
-                <p>For the best experience with this interactive visualization, we recommend using a desktop or laptop computer.</p>
-                <p>While you can still use the visualization on mobile, the larger screen and precise controls of a desktop device will provide a more optimal experience.</p>
+    <div class="container">
+        <header>
+            <div class="title-container">
+                <a href="../index.html" class="back-link">← Collection</a>
+                <h1 class="main-title">Geo<em>Scope</em></h1>
+                <span class="subtitle">LandScale Explorer</span>
             </div>
-        </div>
-    </div>
-
-    <header>
-        <span class="rainbow-text">
-            <span class="title">
-                <span class="rotating-globe">🌍</span> 
-                GeoScope: LandScale Explorer
-            </span>
-            <span class="subtitle">
-                Select a country, then hover over others to compare areas
-            </span>
-        </span>
-        <button id="learnButton" class="learn-button" aria-label="How to use">📖</button>
-        <button id="resetMap" class="reset-button">Reset Map</button>
-    </header>
-    <main>
-        <svg></svg>
-        <div id="legend"></div>
-    </main>
-    <footer>
-        <span class="footer-text">
-            Visualized by: <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a>
-        </span>
-    </footer>
-
-    <!-- Modal -->
-    <div id="instructionModal" class="modal">
-        <div class="modal-content">
-            <button class="close-button" aria-label="Close modal">×</button>
-            <h2>How to Use GeoScope</h2>
-            
-            <div class="feature-section">
-                <h3>Basic Usage</h3>
-                <ol>
-                    <li>Click on any country to select it as your reference country</li>
-                    <li>Hover over other countries to compare their areas</li>
-                    <li>Click while hovering to pause on a particular comparison</li>
-                    <li>Click anywhere to resume comparison</li>
-                    <li>Click the Reset Map button to start over</li>
-                </ol>
+            <div class="header-actions">
+                <button id="resetMap" class="reset-button">Reset</button>
+                <button id="learnButton" class="info-button" aria-label="How to use">?</button>
             </div>
+        </header>
 
-            <div class="feature-section">
-                <h3>What You'll See</h3>
-                <ul>
-                    <li><strong>For Larger Countries:</strong> See how many times your selected country can fit inside</li>
-                    <li><strong>For Smaller Countries:</strong> See which combination of nearby countries equals your selected country's area</li>
-                </ul>
+        <main>
+            <div class="map-wrapper">
+                <svg aria-label="Interactive world map for area comparison"></svg>
             </div>
+            <div id="legend" role="complementary" aria-label="Country information panel">
+                <p class="legend-hint">Click on a country to begin comparing areas</p>
+            </div>
+        </main>
 
-            <div class="feature-section">
-                <h3>Visual Guide</h3>
-                <ul>
-                    <li><strong style="color: rgba(220, 53, 69, 0.7);">Red</strong> - Selected country</li>
-                    <li><strong style="color: rgba(40, 167, 69, 0.5);">Green</strong> - Combined countries (when showing equivalent areas)</li>
-                </ul>
+        <footer>
+            <span>World administrative data</span>
+            <span>© <span id="copy-year"></span> <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></span>
+        </footer>
+
+        <div id="instructionModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+            <div class="modal-content">
+                <button class="close-button" aria-label="Close" type="button">&times;</button>
+                <h2 id="modalTitle">How to Use GeoScope</h2>
+                <div class="instruction-steps">
+                    <div class="step">
+                        <h3>Basic Controls</h3>
+                        <ul>
+                            <li>Click any country to select it as your reference</li>
+                            <li>Hover over other countries to compare their areas</li>
+                            <li>Click while hovering to freeze the comparison</li>
+                            <li>Click Reset to start over</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>What You'll See</h3>
+                        <ul>
+                            <li><strong>Larger countries:</strong> How many times your reference fits inside</li>
+                            <li><strong>Smaller countries:</strong> Nearby countries combined to match your reference area</li>
+                        </ul>
+                    </div>
+                    <div class="step">
+                        <h3>Color Guide</h3>
+                        <ul>
+                            <li><span class="color-dot selected-dot"></span> Selected country</li>
+                            <li><span class="color-dot hover-dot"></span> Hovered country</li>
+                            <li><span class="color-dot equiv-dot"></span> Equivalent area countries</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -85,6 +107,6 @@
     <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://unpkg.com/topojson@3/dist/topojson.min.js"></script>
     <script src="script.js"></script>
-    <script src="../mobile-detect.js"></script>
+    <script>document.getElementById('copy-year').textContent = new Date().getFullYear();</script>
 </body>
-</html> 
+</html>

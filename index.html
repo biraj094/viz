@@ -349,9 +349,10 @@
         </section>
 
         <footer>
-            <span>© 2024 Biraj Koirala</span>
+            <span>© <span id="copy-year"></span> Biraj Koirala</span>
             <span>Crafted by <a href="https://birajkoirala.com.np/" target="_blank" rel="noopener noreferrer">Biraj Koirala</a></span>
         </footer>
     </main>
+    <script>document.getElementById('copy-year').textContent = new Date().getFullYear();</script>
 </body>
 </html>
